@@ -8,11 +8,27 @@ import Image, { StaticImageData } from "next/image";
 import Post from "@/types/Post";
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import PostComment from "@/types/PostComment";
+
+function CommentView({ comment }: { comment: PostComment }) {
+    return (
+        <div className='flex items-center gap-2'>
+            <div className='w-10 h-10'>
+                    <ProfileImage profileImage={comment.author.profileImage} />
+                </div>
+            <div className="bg-gray-50 pt-2 pb-2 pl-6 pr-6 rounded-3xl">
+                {
+                    comment.text
+                }
+            </div>
+        </div>
+    )
+}
 export default function PostView({ post }: { post: Post }) {
     return (
         <div className='bg-white rounded-lg overflow-hidden'>
             <div className="flex p-4 items-center gap-2">
-                <div className='w-10, h-10'>
+                <div className='w-10 h-10'>
                     <ProfileImage profileImage={post.author.profileImage} />
                 </div>
                 <div className="text-zinc-950 font-normal font-roboto leading-loose">
@@ -42,13 +58,13 @@ export default function PostView({ post }: { post: Post }) {
                 <div className="flex pl-8 pr-8 gap-4">
                     <button className="cursor-pointer relative">
                         <ThumbUpOffAltIcon className="w-8 h-8" />
-                        <div className="bg-sky-400 rounded-full flex justify-center align-center scale-50" style={{width:"25px", height:"25px", position: "absolute", left: "16px", bottom: "14px" }}>
+                        <div className="bg-sky-400 rounded-full flex justify-center align-center scale-50" style={{ width: "25px", height: "25px", position: "absolute", left: "16px", bottom: "14px" }}>
                             3
                         </div>
                     </button>
                     <button className="cursor-pointer relative">
                         <ChatBubbleOutlineIcon className="w-8 h-8" />
-                        <div className="bg-sky-400 rounded-full flex justify-center align-center scale-50" style={{ width:"25px", height:"25px", position: "absolute", left: "16px", bottom: "14px" }}>
+                        <div className="bg-sky-400 rounded-full flex justify-center align-center scale-50" style={{ width: "25px", height: "25px", position: "absolute", left: "16px", bottom: "14px" }}>
                             3
                         </div>
                     </button>
@@ -56,6 +72,18 @@ export default function PostView({ post }: { post: Post }) {
             </div>
             <div className='p-4 pt-2'>
                 <input className="min-w-max bg-gray-50  border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" type='text' placeholder="Add comment.." />
+            </div>
+            <div className='h-0.5 ml-4 mr-4 bg-slate-300'>
+
+            </div>
+            <div className='p-8 pt-4 gap-4 flex flex-col'>
+                {
+                    post.comments.map((comment) => {
+                        return (
+                            <CommentView comment={comment} key={comment.uid} />
+                        )
+                    })
+                }
             </div>
         </div>
     )
