@@ -1,0 +1,22 @@
+Pages:
+Main page (feed, detail for a post)
+Profile page
+sign up page
+sign in page
+
+Features:
+
+    posts:
+        Image + caption,
+        Pure text
+        comments
+
+    Notifications
+    
+Models:
+    posts:
+        Text:String
+        Image:Image
+        Likes:Int
+        Comments:
+            Text()
