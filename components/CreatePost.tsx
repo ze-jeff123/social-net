@@ -13,15 +13,16 @@ export default function CreatePost() {
         imageRef.current?.click();
     }
     useEffect(() => {
-        const funct = () => {
+        const funct = (e:Event) => {
             if (imageRef.current?.files && imageRef.current?.files[0]) {
                 setHasImageSelected(true)
                 setImageName(imageRef.current?.files[0]?.name)
+                imageRef.current.value = ""
             }
         }
-        imageRef.current?.addEventListener('change', funct)
+        imageRef.current?.addEventListener('input', funct)
 
-        return () => { imageRef.current?.removeEventListener('change', funct) }
+        return () => { imageRef.current?.removeEventListener('input', funct) }
     }, [])
 
 
