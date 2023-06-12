@@ -155,12 +155,12 @@ export async function getServerSideProps(context: any) {
     uid: "12312",
     displayName: "Smecherul 1",
     friends: [],
-    profileImage: profile,
+    profileImage: null,
   }
   const user = {
     uid: "123",
-    name: "Jeff",
-    profileImage: profile,
+    displayName: "Jeff",
+    profileImage: null,
     friends: [fakeUser],
   }
 

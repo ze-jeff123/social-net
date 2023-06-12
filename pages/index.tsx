@@ -8,13 +8,13 @@ import profile from "../public/images/profile.jpg"
 import johnSinger from "../public/images/john-singer.jpg"
 import PostComment from "@/types/PostComment"
 import { useEffect } from "react"
-import { db } from "@/app/firebase"
 import { doc, setDoc } from "firebase/firestore"
+import { Button } from "@mui/material"
 const fakeUser: User = {
     uid: "123",
     displayName: "Jeff",
     friends: [],
-    profileImage: profile,
+    profileImage: null,
 }
 const fakeComment: PostComment = {
     uid: "1241",
