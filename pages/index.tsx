@@ -33,7 +33,7 @@ const fakePost: Post = {
 export default function Home() {
     return (
         <Layout>
-            <div className='flex justify-center pt-6'>
+            <div className='flex justify-center'>
                 <div className='flex-1 flex flex-col max-w-2xl gap-5'>
                     <CreatePost />
                     <PostView post={fakePost} />

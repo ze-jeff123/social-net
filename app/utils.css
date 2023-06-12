@@ -1,0 +1,8 @@
+.color-split-1 {
+    background : linear-gradient(
+        #61CCFF 0%,
+        #61CCFF 63%,
+        white 63%,
+        white 100%
+    )
+}

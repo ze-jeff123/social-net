@@ -1,13 +1,15 @@
 import "../app/globals.css"
 import Navbar from "./Navbar"
 
-export default function Layout({children}:React.PropsWithChildren<{}>) {
+export default function Layout({ children }: React.PropsWithChildren<{}>) {
     return (
         <>
-            <Navbar/>
-            {
-                children
-            }
+            <Navbar />
+            <div className='pt-6'>
+                {
+                    children
+                }
+            </div>
         </>
     )
 }
