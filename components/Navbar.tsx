@@ -7,7 +7,9 @@ import { useState } from "react"
 import clsx from "clsx"
 import { Modal } from "@mui/material"
 import EditProfileModal from "./EditProfileModal"
-
+import { useCurrentUser } from "../app/fireauth"
+import Button from "./ButtonTailwind"
+import SignInModal from "./SignInModal"
 function Logo() {
     return (
         <Link href="/" className="flex">
@@ -55,9 +57,36 @@ function ProfileButton({ openModal }: { openModal: () => void }) {
     )
 }
 
+function SignIn() {
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const openModal = () => {
+        setIsModalOpen(true)
+    }
+    const closeModal = () => {
+        setIsModalOpen(false)
+    }
+
+    const signIn = () => {
+        openModal()
+    }
+    return (<>
+        <div className="ml-auto flex gap-4">
+            <Button onClick={signIn}>
+                Log in
+            </Button>
+            <Button onClick={() => { }}>
+                Sign up
+            </Button>
+        </div>
+        <SignInModal open={isModalOpen} onClose={closeModal} />
+    </>
+    )
+}
 export default function Navbar() {
     const [showing, setShowing] = useState<"posts" | "friends">("posts")
     const [modalOpen, setModalOpen] = useState(false)
+    const user = useCurrentUser();
+    console.log(user)
     const closeModal = () => {
         setModalOpen(false)
     }
@@ -69,9 +98,13 @@ export default function Navbar() {
         <>
             <div className="bg-white h-12 shadow-md shadow-gray-200 p-1 flex flex-1 sticky pl-3 pr-3">
                 <Logo />
-                <ProfileButton openModal={openModal} />
+                {
+                    user
+                        ? <ProfileButton openModal={openModal} />
+                        : <SignIn />
+                }
             </div>
-            <EditProfileModal handleClose={closeModal} open={modalOpen}/>
+            <EditProfileModal handleClose={closeModal} open={modalOpen} />
         </>
     )
 }

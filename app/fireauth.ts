@@ -54,11 +54,10 @@ const signInAsGuest = (displayName:string) => {
     });
 }
 
-const FireAuth = {
-    signInWithGoogle: signInWithGoogle,
+export {
+    signInAnonymously,
+    signInWithGoogle,
     signInAsGuest,
-    signOut,
     useCurrentUser,
-}
-
-export default FireAuth;
+    signOut,
+};
