@@ -5,6 +5,8 @@ import profileImage from "../public/images/profile.jpg"
 import ProfileImage from "./ProfileImage"
 import { useState } from "react"
 import clsx from "clsx"
+import { Modal } from "@mui/material"
+import EditProfileModal from "./EditProfileModal"
 
 function Logo() {
     return (
@@ -21,14 +23,14 @@ function Logo() {
     )
 }
 
-function ProfileButton() {
+function ProfileButton({ openModal }: { openModal: () => void }) {
     const [isShowing, setIsShowing] = useState(false)
     const toggle = () => {
         setIsShowing(!isShowing)
     }
     return (
         <div className='ml-auto items-end flex flex-col'>
-            <button onClick={toggle} onBlur={()=>{setIsShowing(false)}} className='cursor-pointer gap-2 flex items-center'>
+            <button onClick={toggle} onBlur={() => { setIsShowing(false) }} className='cursor-pointer gap-2 flex items-center'>
                 <div className="font-semibold from-neutral-500">
                     Tudor
                 </div>
@@ -39,13 +41,13 @@ function ProfileButton() {
             <div className={clsx(!isShowing && "hidden") + " bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 z-40 relative"}>
                 <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
                     <li>
-                        <Link onMouseDown={(e)=>{e.preventDefault()}}  href="/profile/123" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Profile</Link>
+                        <Link onMouseDown={(e) => { e.preventDefault() }} href="/profile/123" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Profile</Link>
                     </li>
                     <li>
-                        <Link onMouseDown={(e)=>{e.preventDefault()}}  href="/profile/123/edit" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</Link>
+                        <button onClick={openModal} onMouseDown={(e) => { e.preventDefault() }} className="w-full text-left block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</button>
                     </li>
                     <li>
-                        <button onMouseDown={(e)=>{e.preventDefault()}} className="w-full text-left block px-4 py-2 text-red-500 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign out</button>
+                        <button onMouseDown={(e) => { e.preventDefault() }} className="w-full text-left block px-4 py-2 text-red-500 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign out</button>
                     </li>
                 </ul>
             </div>
@@ -54,10 +56,22 @@ function ProfileButton() {
 }
 
 export default function Navbar() {
+    const [showing, setShowing] = useState<"posts" | "friends">("posts")
+    const [modalOpen, setModalOpen] = useState(false)
+    const closeModal = () => {
+        setModalOpen(false)
+    }
+    const openModal = () => {
+        console.log("hi modal open")
+        setModalOpen(true)
+    }
     return (
-        <div className="bg-white h-12 shadow-md shadow-gray-200 p-1 flex flex-1 sticky pl-3 pr-3">
-            <Logo />
-            <ProfileButton />
-        </div>
+        <>
+            <div className="bg-white h-12 shadow-md shadow-gray-200 p-1 flex flex-1 sticky pl-3 pr-3">
+                <Logo />
+                <ProfileButton openModal={openModal} />
+            </div>
+            <EditProfileModal handleClose={closeModal} open={modalOpen}/>
+        </>
     )
 }

@@ -11,6 +11,7 @@ import johnSinger from "../../public/images/john-singer.jpg"
 import PostComment from '@/types/PostComment'
 import PostView from '@/components/PostView'
 import clsx from 'clsx'
+import EditProfileModal from '@/components/EditProfileModal'
 
 type Props = {
   user: User
@@ -48,7 +49,7 @@ function Button({ onClick, children }: React.PropsWithChildren<{ onClick: () => 
 }
 
 function LightButton({ onClick, children }: React.PropsWithChildren<{ onClick: () => void }>) {
-  return (<button type="button" className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+  return (<button type="button" onClick={onClick} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
     {
       children
     }
@@ -86,7 +87,7 @@ function FriendsList({ friends }: { friends: User[] }) {
   )
 }
 
-function ProfileHeader({ user }: { user: User }) {
+function ProfileHeader({ user,openModal }: { user: User,openModal:()=>void }) {
   return (
     <div className='flex-1 rounded-md color-split-1 sm:grow-[0.8] relative -z-1'>
       <div className='p-4 pl-4 pr-4 sm:pl-8 sm:pr-8'>
@@ -100,8 +101,8 @@ function ProfileHeader({ user }: { user: User }) {
         </div>
       </div>
       <div className="absolute flex justify-end pr-4" style={{width:"200px",bottom:"8px", right:0}}>
-        <LightButton onClick={() => { }}>
-          Edit Profile
+        <LightButton onClick={openModal}>
+          Settings
         </LightButton>
       </div>
     </div>
@@ -110,11 +111,18 @@ function ProfileHeader({ user }: { user: User }) {
 
 export default function Profile({ user, posts }: Props) {
   const [showing, setShowing] = useState<"posts" | "friends">("posts")
-
+  const [modalOpen, setModalOpen] = useState(false)
+  const closeModal = () => {
+    setModalOpen(false)
+  }
+  const openModal = () => {
+    console.log("hi modal open")
+    setModalOpen(true)
+  }
   return (
     <Layout>
       <div className='flex justify-center'>
-        <ProfileHeader user={user} />
+        <ProfileHeader user={user} openModal={openModal}/>
       </div>
       <div className='flex items-center flex-col'>
         <div className='pt-4 pb-4'>
@@ -139,6 +147,7 @@ export default function Profile({ user, posts }: Props) {
           </div>
         }
       </div>
+      <EditProfileModal open={modalOpen} handleClose={closeModal}/>
     </Layout>
   )
 }
