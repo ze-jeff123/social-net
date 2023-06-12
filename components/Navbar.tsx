@@ -33,7 +33,7 @@ function ProfileButton() {
 
 export default function Navbar() {
     return (
-        <div className="bg-white h-10 shadow-md shadow-gray-200 pl-1 pr-1 flex flex-1 sticky">
+        <div className="bg-white h-12 shadow-md shadow-gray-200 p-1 flex flex-1 sticky">
             <Logo />
             <ProfileButton />
         </div>

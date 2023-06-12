@@ -10,6 +10,7 @@ import PostComment from "@/types/PostComment"
 const fakeUser: User = {
     uid:"123",
     name: "Jeff",
+    friends:[],
     profileImage: profile,
 }
 const fakeComment : PostComment = {
