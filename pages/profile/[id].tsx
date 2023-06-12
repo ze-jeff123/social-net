@@ -40,7 +40,15 @@ function ButtonGroup({ showing, setShowing }: { showing: "posts" | "friends", se
 }
 
 function Button({ onClick, children }: React.PropsWithChildren<{ onClick: () => void }>) {
-  return (<button onClick={onClick} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+  return (<button type="button" onClick={onClick} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+    {
+      children
+    }
+  </button>)
+}
+
+function LightButton({ onClick, children }: React.PropsWithChildren<{ onClick: () => void }>) {
+  return (<button type="button" className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
     {
       children
     }
@@ -77,9 +85,10 @@ function FriendsList({ friends }: { friends: User[] }) {
 
   )
 }
+
 function ProfileHeader({ user }: { user: User }) {
   return (
-    <div className='flex-1 rounded-md color-split-1 sm:grow-[0.8] '>
+    <div className='flex-1 rounded-md color-split-1 sm:grow-[0.8] relative -z-1'>
       <div className='p-4 pl-4 pr-4 sm:pl-8 sm:pr-8'>
         <div className='h-32 w-32 border-white border-8 rounded-full flex gap-7 items-center'>
           <ProfileImage profileImage={user.profileImage} />
@@ -89,6 +98,11 @@ function ProfileHeader({ user }: { user: User }) {
             }
           </div>
         </div>
+      </div>
+      <div className="absolute flex justify-end pr-4" style={{width:"200px",bottom:"8px", right:0}}>
+        <LightButton onClick={() => { }}>
+          Edit Profile
+        </LightButton>
       </div>
     </div>
   )
