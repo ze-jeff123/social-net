@@ -63,7 +63,7 @@ function FriendView({ user }: { user: User }) {
       </div>
       <div>
         {
-          user.name
+          user.displayName
         }
       </div>
       <Button onClick={() => { }}>
@@ -95,7 +95,7 @@ function ProfileHeader({ user,openModal }: { user: User,openModal:()=>void }) {
           <ProfileImage profileImage={user.profileImage} />
           <div className="text-darkblue text-xl font-semibold">
             {
-              user.name
+              user.displayName
             }
           </div>
         </div>
@@ -159,7 +159,7 @@ export async function getServerSideProps(context: any) {
   // here we get the user using the id, or the fake user in this case
   const fakeUser: User = {
     uid: "12312",
-    name: "Smecherul 1",
+    displayName: "Smecherul 1",
     friends: [],
     profileImage: profile,
   }

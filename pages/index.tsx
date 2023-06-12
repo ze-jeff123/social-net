@@ -7,24 +7,27 @@ import User from "@/types/User"
 import profile from "../public/images/profile.jpg"
 import johnSinger from "../public/images/john-singer.jpg"
 import PostComment from "@/types/PostComment"
+import { useEffect } from "react"
+import { db } from "@/app/firebase"
+import { doc, setDoc } from "firebase/firestore"
 const fakeUser: User = {
-    uid:"123",
-    name: "Jeff",
-    friends:[],
+    uid: "123",
+    displayName: "Jeff",
+    friends: [],
     profileImage: profile,
 }
-const fakeComment : PostComment = {
-    uid:"1241",
-    author : fakeUser,
-    text : "That is a really nice photo, thanks for sharing Jeff!",
+const fakeComment: PostComment = {
+    uid: "1241",
+    author: fakeUser,
+    text: "That is a really nice photo, thanks for sharing Jeff!",
 }
-const fakeComment2 : PostComment = {
-    uid:"1241",
-    author : fakeUser,
-    text : "I know, right? He really did a nice job",
+const fakeComment2: PostComment = {
+    uid: "1241",
+    author: fakeUser,
+    text: "I know, right? He really did a nice job",
 }
 const fakePost: Post = {
-    uid:"1312",
+    uid: "1312",
     author: fakeUser,
     comments: [fakeComment, fakeComment2],
     image: johnSinger,

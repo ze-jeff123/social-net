@@ -33,7 +33,7 @@ export default function PostView({ post }: { post: Post }) {
                 </div>
                 <div className="text-zinc-950 font-normal font-roboto leading-loose">
                     {
-                        post.author.name
+                        post.author.displayName
                     }
                 </div>
             </div>
