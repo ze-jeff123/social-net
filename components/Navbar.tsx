@@ -87,11 +87,10 @@ function SignIn() {
     </>
     )
 }
-export default function Navbar() {
+export default function Navbar({currentUser} : {currentUser : User}) {
     const [showing, setShowing] = useState<"posts" | "friends">("posts")
     const [modalOpen, setModalOpen] = useState(false)
-    const user = useCurrentUser();
-    console.log(user)
+
     const closeModal = () => {
         setModalOpen(false)
     }
@@ -104,8 +103,8 @@ export default function Navbar() {
             <div className="bg-white h-12 shadow-md shadow-gray-200 p-1 flex flex-1 sticky pl-3 pr-3">
                 <Logo />
                 {
-                    user
-                        ? <ProfileButton user={user} openModal={openModal} />
+                    currentUser
+                        ? <ProfileButton user={currentUser} openModal={openModal} />
                         : <SignIn />
                 }
             </div>

@@ -1,11 +1,11 @@
 import "../app/globals.css"
 import Navbar from "./Navbar"
 
-export default function Layout({ children }: React.PropsWithChildren<{}>) {
+export default function Layout({ children, currentUser }: React.PropsWithChildren<{currentUser : User}>) {
     return (
             <div>
                 <div className='relative z-50'>
-                    <Navbar />
+                    <Navbar currentUser={currentUser}/>
                 </div>
                 <div className='pt-6'>
                     {

@@ -10,6 +10,8 @@ import PostComment from "@/types/PostComment"
 import { useEffect } from "react"
 import { doc, setDoc } from "firebase/firestore"
 import { Button } from "@mui/material"
+import { addPost, getAllPosts } from "@/app/firestore"
+import { useCurrentUser } from "@/app/fireauth"
 const fakeUser: User = {
     uid: "123",
     displayName: "Jeff",
@@ -35,11 +37,18 @@ const fakePost: Post = {
     text: "Hi everyone! Just wanted to share this cool painint, enjoy!",
 }
 export default function Home() {
+    /*useEffect(()=>{
+        addPost(fakePost)
+        const posts = getAllPosts()
+        console.log(posts)
+    })*/
+    const currentUser = useCurrentUser();
+
     return (
-        <Layout>
+        <Layout currentUser={currentUser}>
             <div className='flex justify-center'>
                 <div className='flex-1 flex flex-col max-w-2xl gap-5'>
-                    <CreatePost />
+                    <CreatePost currentUser={currentUser}/>
                     <PostView post={fakePost} />
                     <PostView post={fakePost} />
                 </div>
