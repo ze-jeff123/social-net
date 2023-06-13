@@ -5,6 +5,6 @@ export default function ProfileImage({ profileImage }: { profileImage: string | 
     const image = profileImage ?? defaultImage
     
     return (
-        < Image src={image} alt="profile image" style={{ width: '100%', height: '100%' }} className="rounded-full" />
+        < Image src={image} width={160} height={160} alt="profile image" style={{ width: '100%', height: '100%' }} className="rounded-full" />
     )
 }

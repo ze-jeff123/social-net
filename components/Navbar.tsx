@@ -28,7 +28,7 @@ function Logo() {
     )
 }
 
-function ProfileButton({ openModal }: { openModal: () => void }) {
+function ProfileButton({ openModal, user }: { openModal: () => void, user : User }) {
     const [isShowing, setIsShowing] = useState(false)
     const toggle = () => {
         setIsShowing(!isShowing)
@@ -40,10 +40,12 @@ function ProfileButton({ openModal }: { openModal: () => void }) {
         <div className='ml-auto items-end flex flex-col'>
             <button onClick={toggle} onBlur={() => { setIsShowing(false) }} className='cursor-pointer gap-2 flex items-center'>
                 <div className="font-semibold from-neutral-500">
-                    Tudor
+                    {
+                        user.displayName
+                    }
                 </div>
                 <div className='w-10 h-10'>
-                    <ProfileImage profileImage={null} />
+                    <ProfileImage profileImage={user.profileImage}/>
                 </div>
             </button>
             <div className={clsx(!isShowing && "hidden") + " bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 z-40 relative"}>
@@ -89,7 +91,7 @@ export default function Navbar() {
     const [showing, setShowing] = useState<"posts" | "friends">("posts")
     const [modalOpen, setModalOpen] = useState(false)
     const user = useCurrentUser();
-
+    console.log(user)
     const closeModal = () => {
         setModalOpen(false)
     }
@@ -103,7 +105,7 @@ export default function Navbar() {
                 <Logo />
                 {
                     user
-                        ? <ProfileButton openModal={openModal} />
+                        ? <ProfileButton user={user} openModal={openModal} />
                         : <SignIn />
                 }
             </div>

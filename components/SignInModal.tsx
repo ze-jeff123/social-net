@@ -12,7 +12,7 @@ type Props = {
 export default function EditProfileModal({ open, handleClose }: Props) {
 
     const guestSignIn = () => {
-        signInAsGuest("display name")
+        signInAsGuest("Guest")
     }
     const googleSignIn = () => {
         signInWithGoogle()
