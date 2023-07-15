@@ -10,7 +10,7 @@ import PostComment from "@/types/PostComment"
 import { useEffect } from "react"
 import { doc, setDoc } from "firebase/firestore"
 import { Button } from "@mui/material"
-import { addPost, getAllPosts } from "@/app/firestore"
+import { addPost, downloadImage, getAllPosts } from "@/app/firestore"
 import { useCurrentUser } from "@/app/fireauth"
 const fakeUser: User = {
     uid: "123",
@@ -51,3 +51,4 @@ export default function Home() {
         </Layout>
     )
 }
+

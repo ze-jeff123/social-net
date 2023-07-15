@@ -6,7 +6,7 @@ export default interface Post {
     uid:string,
     author : User,
     text : string,
-    image : StaticImageData | null,
+    image : string | null,
     likes : number,
     comments : PostComment[]
 }
