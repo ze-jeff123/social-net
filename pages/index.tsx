@@ -37,11 +37,6 @@ const fakePost: Post = {
     text: "Hi everyone! Just wanted to share this cool painint, enjoy!",
 }
 export default function Home() {
-    /*useEffect(()=>{
-        addPost(fakePost)
-        const posts = getAllPosts()
-        console.log(posts)
-    })*/
     const currentUser = useCurrentUser();
 
     return (

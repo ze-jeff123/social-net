@@ -13,6 +13,7 @@ import PostView from '@/components/PostView'
 import clsx from 'clsx'
 import EditProfileModal from '@/components/EditProfileModal'
 import Button from "@/components/ButtonTailwind"
+import { useCurrentUser } from '@/app/fireauth'
 
 type Props = {
   user: User
@@ -106,6 +107,8 @@ function ProfileHeader({ user,openModal }: { user: User,openModal:()=>void }) {
 export default function Profile({ user, posts }: Props) {
   const [showing, setShowing] = useState<"posts" | "friends">("posts")
   const [modalOpen, setModalOpen] = useState(false)
+  const currentUser = useCurrentUser();
+
   const closeModal = () => {
     setModalOpen(false)
   }
@@ -114,7 +117,7 @@ export default function Profile({ user, posts }: Props) {
     setModalOpen(true)
   }
   return (
-    <Layout>
+    <Layout currentUser={currentUser}>
       <div className='flex justify-center'>
         <ProfileHeader user={user} openModal={openModal}/>
       </div>

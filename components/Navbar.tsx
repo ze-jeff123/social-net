@@ -87,7 +87,7 @@ function SignIn() {
     </>
     )
 }
-export default function Navbar({currentUser} : {currentUser : User}) {
+export default function Navbar({currentUser} : {currentUser : User | null}) {
     const [showing, setShowing] = useState<"posts" | "friends">("posts")
     const [modalOpen, setModalOpen] = useState(false)
 
