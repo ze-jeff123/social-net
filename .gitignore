@@ -2,6 +2,8 @@
 
 /secret
 
+firebase_config.js
+
 # dependencies
 /node_modules
 /.pnp
