@@ -10,8 +10,9 @@ import PostComment from "@/types/PostComment"
 import { useEffect, useState } from "react"
 import { doc, setDoc } from "firebase/firestore"
 import { Button } from "@mui/material"
-import { addPost, downloadImage, getAllPosts, updatePostLikes } from "@/app/firestore"
+import { addPost, downloadImage, getAllPosts, updatePostLikes, addComment as firestoreAddComment } from "@/app/firestore"
 import { useCurrentUser } from "@/app/fireauth"
+import {v4 as uuidv4} from "uuid"
 /*const fakeUser: User = {
     uid: "123",
     displayName: "Jeff",
@@ -44,12 +45,34 @@ export default function Home(props: Props) {
     const currentUser = useCurrentUser();
     const [posts, setPosts] = useState(props.posts)
 
+    const addComment = (commentedPost:Post, commentText:string) => {
+        if (currentUser === null) {
+            alert("You need to be logged in to comment!")
+            return
+        }
+        const comment : PostComment = {
+            uid : uuidv4(),
+            text : commentText,
+            author : currentUser,
+        }
+        const newPosts = posts.map((post) => {
+            if (post.uid != commentedPost.uid) return post
+            const {comments , ...restPost} = post
+            const newComments = comments.concat(comment)
+            return {comments : newComments , ...restPost}
+        })
+        setPosts(newPosts)
+        firestoreAddComment(commentedPost,comment)
+    }
     const createPost = (newDatabasePost: Post, newLocalPost: Post) => {
         setPosts([newLocalPost].concat(posts))
         return addPost(newDatabasePost)
     }
     const likePost = (likedPost: Post) => {
-        if (currentUser === null) return
+        if (currentUser === null) {
+            alert("You need to be logged in to like a post!")
+            return
+        }
         if (likedPost.usersWhoLikedUid.includes(currentUser.uid)) {
             const newPosts = posts.map((post) => {
                 if (post.uid != likedPost.uid) {
@@ -81,7 +104,7 @@ export default function Home(props: Props) {
                     <CreatePost createPost={createPost} currentUser={currentUser} />
                     {
                         posts.map((post) => (
-                            <PostView isPostLiked={currentUser ? post.usersWhoLikedUid.includes(currentUser.uid) : false} post={post} key={post.uid} likePost={likePost} />
+                            <PostView addComment={addComment} isPostLiked={currentUser ? post.usersWhoLikedUid.includes(currentUser.uid) : false} post={post} key={post.uid} likePost={likePost} />
                         ))
                     }
                 </div>

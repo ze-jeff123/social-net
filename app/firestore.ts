@@ -3,6 +3,7 @@ import { db, storage } from "./init_firebase";
 import { collection, doc, getDocs, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { UploadResult, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import User from "@/types/User";
+import PostComment from "@/types/PostComment";
 
 function addPost(post:Post) {
     return setDoc(doc(db,"posts",post.uid), post)
@@ -22,6 +23,10 @@ function updatePostLikes(post:Post, newUsersWhoLikedUid:string[]):Promise<void> 
     const postRef = doc(db, "posts", post.uid)
     return updateDoc(postRef,{usersWhoLikedUid : newUsersWhoLikedUid})
 }
+function addComment(post:Post, comment:PostComment) {
+    const postRef = doc(db, "posts", post.uid)
+    return updateDoc(postRef, "comments", post.comments.concat(comment))
+}
 function uploadImage(image: File, uid:string) : Promise<UploadResult> {
     const storageRef = ref(storage, 'images/'+uid)
     return uploadBytes(storageRef, image)
@@ -35,5 +40,6 @@ export {
     getAllPosts,
     uploadImage,
     downloadImage,
-    updatePostLikes
+    updatePostLikes,
+    addComment,
 }
