@@ -8,7 +8,7 @@ import Image from "next/image";
 import User from "@/types/User";
 import { v4 as uuidv4 } from "uuid";
 import Post from "@/types/Post";
-import { addPost, uploadImage } from "@/app/firestore";
+import { uploadImage } from "@/app/firestore";
 
 
 const LoadingIndicator = () => {
@@ -19,7 +19,7 @@ const LoadingIndicator = () => {
 
     )
 }
-export default function CreatePost({ currentUser }: { currentUser: User | null }) {
+export default function CreatePost({ currentUser,createPost }: { currentUser: User | null, createPost: (newPost:Post) => Promise<void> }) {
     const imageInputRef = React.createRef<HTMLInputElement>()
     const formRef = React.createRef<HTMLFormElement>()
     const [isLoading, setIsLoading] = useState(false)
@@ -58,7 +58,7 @@ export default function CreatePost({ currentUser }: { currentUser: User | null }
                 comments: []
             }
 
-            addPost(newPost)
+            createPost(newPost)
 
             resetForm()
 

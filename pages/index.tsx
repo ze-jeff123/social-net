@@ -7,7 +7,7 @@ import User from "@/types/User"
 import profile from "../public/images/profile.jpg"
 import johnSinger from "../public/images/john-singer.jpg"
 import PostComment from "@/types/PostComment"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { doc, setDoc } from "firebase/firestore"
 import { Button } from "@mui/material"
 import { addPost, downloadImage, getAllPosts } from "@/app/firestore"
@@ -39,14 +39,20 @@ const fakePost: Post = {
 interface Props {
     posts : Post[]
 }
-export default function Home({posts} : Props) {
+export default function Home(props : Props) {
     const currentUser = useCurrentUser();
+    const [posts, setPosts] = useState(props.posts)
     
+    const createPost = (newPost : Post) => {
+        setPosts([newPost].concat(posts))
+        return addPost(newPost)
+    }
+
     return (
         <Layout currentUser={currentUser}>
             <div className='flex justify-center'>
                 <div className='flex-1 flex flex-col max-w-2xl gap-5'>
-                    <CreatePost currentUser={currentUser}/>
+                    <CreatePost createPost={createPost} currentUser={currentUser}/>
                     {
                         posts.map((post) => (
                             <PostView post={post} key={post.uid}/>
