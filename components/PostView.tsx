@@ -14,8 +14,8 @@ function CommentView({ comment }: { comment: PostComment }) {
     return (
         <div className='flex items-center gap-2'>
             <div className='w-10 h-10'>
-                    <ProfileImage profileImage={comment.author.profileImage} />
-                </div>
+                <ProfileImage profileImage={comment.author.profileImage} />
+            </div>
             <div className="bg-gray-50 pt-2 pb-2 pl-6 pr-6 rounded-3xl">
                 {
                     comment.text
@@ -24,7 +24,10 @@ function CommentView({ comment }: { comment: PostComment }) {
         </div>
     )
 }
-export default function PostView({ post }: { post: Post }) {
+export default function PostView({ post, likePost, isPostLiked }: { post: Post, likePost: (post: Post) => void, isPostLiked: boolean }) {
+    const onLikeClick = () => {
+        likePost(post)
+    }
     return (
         <div className='bg-white rounded-lg overflow-hidden'>
             <div className="flex p-4 items-center gap-2">
@@ -47,7 +50,7 @@ export default function PostView({ post }: { post: Post }) {
             <div className="p-4 pb-2">
                 {
                     post.image &&
-                    <div className='rounded-md overflow-hidden flex justify-center relative'>
+                    <div className='rounded-md flex justify-center relative overflow-hidden'>
                         <Image width={600} height={600} alt="the image of the post" src={post.image}>
 
                         </Image>
@@ -56,13 +59,32 @@ export default function PostView({ post }: { post: Post }) {
             </div>
             <div>
                 <div className="flex pl-8 pr-8 gap-4">
-                    <button className="cursor-pointer relative">
-                        <ThumbUpOffAltIcon className="w-8 h-8" />
-                        <div className="bg-sky-400 rounded-full flex justify-center align-center scale-50" style={{ width: "25px", height: "25px", position: "absolute", left: "16px", bottom: "14px" }}>
-                            3
-                        </div>
+                    <button className="cursor-pointer relative hover:bg-gray-200 rounded-full p-1" onClick={onLikeClick}>
+
+                        {
+                            isPostLiked
+                                ?
+                                <>
+                                    <ThumbUpOffAltIcon className="w-8 h-8 text-sky-300" />
+                                    <div className="bg-sky-400 rounded-full flex justify-center align-center scale-50" style={{ width: "25px", height: "25px", position: "absolute", left: "16px", bottom: "14px" }}>
+                                        {
+                                            post.usersWhoLikedUid.length
+                                        }
+                                    </div>
+                                </>
+                                :
+                                <>
+                                    <ThumbUpOffAltIcon className="w-8 h-8" />
+                                    <div className="bg-slate-400 rounded-full flex justify-center align-center scale-50" style={{ width: "25px", height: "25px", position: "absolute", left: "16px", bottom: "14px" }}>
+                                        {
+                                            post.usersWhoLikedUid.length
+                                        }
+                                    </div>
+                                </>
+
+                        }
                     </button>
-                    <button className="cursor-pointer relative">
+                    <button className="cursor-pointer relative hover:bg-gray-200 rounded-full p-1">
                         <ChatBubbleOutlineIcon className="w-8 h-8" />
                         <div className="bg-sky-400 rounded-full flex justify-center align-center scale-50" style={{ width: "25px", height: "25px", position: "absolute", left: "16px", bottom: "14px" }}>
                             3

@@ -7,7 +7,7 @@ export default interface Post {
     author : User,
     text : string,
     image : string | null,
-    likes : number,
+    usersWhoLikedUid : string[],
     comments : PostComment[]
     timestamp : string,
 }

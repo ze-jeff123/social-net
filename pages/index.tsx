@@ -10,7 +10,7 @@ import PostComment from "@/types/PostComment"
 import { useEffect, useState } from "react"
 import { doc, setDoc } from "firebase/firestore"
 import { Button } from "@mui/material"
-import { addPost, downloadImage, getAllPosts } from "@/app/firestore"
+import { addPost, downloadImage, getAllPosts, updatePostLikes } from "@/app/firestore"
 import { useCurrentUser } from "@/app/fireauth"
 /*const fakeUser: User = {
     uid: "123",
@@ -37,25 +37,51 @@ const fakePost: Post = {
     text: "Hi everyone! Just wanted to share this cool painint, enjoy!",
 }*/
 interface Props {
-    posts : Post[]
+    posts: Post[]
 }
-export default function Home(props : Props) {
+
+export default function Home(props: Props) {
     const currentUser = useCurrentUser();
     const [posts, setPosts] = useState(props.posts)
-    
-    const createPost = (newDatabasePost : Post, newLocalPost : Post) => {
+
+    const createPost = (newDatabasePost: Post, newLocalPost: Post) => {
         setPosts([newLocalPost].concat(posts))
         return addPost(newDatabasePost)
     }
-    
+    const likePost = (likedPost: Post) => {
+        if (currentUser === null) return
+        if (likedPost.usersWhoLikedUid.includes(currentUser.uid)) {
+            const newPosts = posts.map((post) => {
+                if (post.uid != likedPost.uid) {
+                    return post
+                }
+
+                const { usersWhoLikedUid, ...restPost} = post
+                const newUsersWhoLikedUid = usersWhoLikedUid.filter((userUid) => userUid != currentUser.uid)
+                return {usersWhoLikedUid : newUsersWhoLikedUid, ...restPost}
+            })
+
+            setPosts(newPosts)
+
+
+            const { usersWhoLikedUid, ...restPost} = likedPost
+            const newUsersWhoLikedUid = usersWhoLikedUid.filter((userUid) => userUid != currentUser.uid)
+            updatePostLikes(likedPost, newUsersWhoLikedUid)
+        } else {
+            const newPosts = posts.map((post) => ((likedPost.uid === post.uid) ? Object.assign({}, post, { usersWhoLikedUid: post.usersWhoLikedUid.concat(currentUser.uid) }) : post))
+            setPosts(newPosts)
+            updatePostLikes(likedPost, likedPost.usersWhoLikedUid.concat(currentUser.uid))
+        }
+    }
+
     return (
         <Layout currentUser={currentUser}>
             <div className='flex justify-center'>
                 <div className='flex-1 flex flex-col max-w-2xl gap-5'>
-                    <CreatePost createPost={createPost} currentUser={currentUser}/>
+                    <CreatePost createPost={createPost} currentUser={currentUser} />
                     {
                         posts.map((post) => (
-                            <PostView post={post} key={post.uid}/>
+                            <PostView isPostLiked={currentUser ? post.usersWhoLikedUid.includes(currentUser.uid) : false} post={post} key={post.uid} likePost={likePost} />
                         ))
                     }
                 </div>
@@ -67,14 +93,14 @@ export default function Home(props : Props) {
 
 export async function getServerSideProps() {
     const posts = await getAllPosts()
-    
+
     const postsWithProcessedImageUrl = await Promise.all(posts.map((post) => {
         const urlPromise = post.image ? downloadImage(post.image) : Promise.resolve(null)
         return urlPromise.then((url) => {
-            const postWithProcessedImageUrl = Object.assign({}, post, {image : url})
+            const postWithProcessedImageUrl = Object.assign({}, post, { image: url })
             return postWithProcessedImageUrl
         })
 
     }))
-    return {props:{posts : postsWithProcessedImageUrl}}
+    return { props: { posts: postsWithProcessedImageUrl } }
 }

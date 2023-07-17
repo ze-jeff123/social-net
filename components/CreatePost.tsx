@@ -56,7 +56,7 @@ export default function CreatePost({ currentUser,createPost }: { currentUser: Us
                 author: currentUser!,
                 text: text,
                 image: imageURL,
-                likes: 0,
+                usersWhoLikedUid: [],
                 comments: [],
                 timestamp : (new Date()).toISOString(),
             }
