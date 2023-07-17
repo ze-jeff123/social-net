@@ -48,9 +48,10 @@ export default function PostView({ post }: { post: Post }) {
                 {
                     post.image &&
                     <div className='max-h-96 rounded-md overflow-hidden'>
-                        <Image alt="the image of the post" src={post.image}>
+                        <img src={post.image}></img>
+                        {/*<Image width={200} height={200} alt="the image of the post" src={post.image}>
 
-                        </Image>
+                        </Image>*/}
                     </div>
                 }
             </div>

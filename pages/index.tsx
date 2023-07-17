@@ -12,7 +12,7 @@ import { doc, setDoc } from "firebase/firestore"
 import { Button } from "@mui/material"
 import { addPost, downloadImage, getAllPosts } from "@/app/firestore"
 import { useCurrentUser } from "@/app/fireauth"
-const fakeUser: User = {
+/*const fakeUser: User = {
     uid: "123",
     displayName: "Jeff",
     friends: [],
@@ -35,20 +35,40 @@ const fakePost: Post = {
     image: johnSinger,
     likes: 3,
     text: "Hi everyone! Just wanted to share this cool painint, enjoy!",
+}*/
+interface Props {
+    posts : Post[]
 }
-export default function Home() {
+export default function Home({posts} : Props) {
     const currentUser = useCurrentUser();
-
+    
     return (
         <Layout currentUser={currentUser}>
             <div className='flex justify-center'>
                 <div className='flex-1 flex flex-col max-w-2xl gap-5'>
                     <CreatePost currentUser={currentUser}/>
-                    <PostView post={fakePost} />
-                    <PostView post={fakePost} />
+                    {
+                        posts.map((post) => (
+                            <PostView post={post} key={post.uid}/>
+                        ))
+                    }
                 </div>
             </div>
         </Layout>
     )
 }
 
+
+export async function getServerSideProps() {
+    const posts = await getAllPosts()
+    
+    const postsWithProcessedImageUrl = await Promise.all(posts.map((post) => {
+        const urlPromise = post.image ? downloadImage(post.image) : Promise.resolve(null)
+        return urlPromise.then((url) => {
+            const postWithProcessedImageUrl = Object.assign({}, post, {image : url})
+            return postWithProcessedImageUrl
+        })
+
+    }))
+    return {props:{posts : postsWithProcessedImageUrl}}
+}
