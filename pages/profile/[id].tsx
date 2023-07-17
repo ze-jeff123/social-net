@@ -14,7 +14,9 @@ import clsx from 'clsx'
 import EditProfileModal from '@/components/EditProfileModal'
 import Button from "@/components/ButtonTailwind"
 import { useCurrentUser } from '@/app/fireauth'
-
+import { addPost, downloadImage, getAllPostsOfUser, getUser, updatePostLikes } from '@/app/firestore'
+import { v4 as uuidv4 } from "uuid"
+import { addComment as firestoreAddComment } from "../../app/firestore"
 type Props = {
   user: User
   posts: Post[]
@@ -71,23 +73,26 @@ function FriendsList({ friends }: { friends: User[] }) {
   return (
 
     <ul className="text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-      <li className="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-        <FriendView user={friends[0]} />
-      </li>
-      <li className="w-full px-4 py-2 border-b border-gray-200 dark:border-gray-600">
-        <FriendView user={friends[0]} />
-      </li>
+      {
+        friends.map((friend) => (
+          <li className="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+            <FriendView user={friend} />
+          </li>
+        ))
+      }
     </ul>
 
   )
 }
 
-function ProfileHeader({ user,openModal }: { user: User,openModal:()=>void }) {
+function ProfileHeader({ user, openModal }: { user: User, openModal: () => void }) {
   return (
     <div className='flex-1 rounded-md color-split-1 sm:grow-[0.8] relative -z-1'>
       <div className='p-4 pl-4 pr-4 sm:pl-8 sm:pr-8'>
-        <div className='h-32 w-32 border-white border-8 rounded-full flex gap-7 items-center'>
-          <ProfileImage profileImage={user.profileImage} />
+        <div className='flex gap-7 items-center'>
+          <div className='h-32 w-32 border-white border-8 rounded-full '>
+            <ProfileImage profileImage={user.profileImage} />
+          </div>
           <div className="text-darkblue text-xl font-semibold">
             {
               user.displayName
@@ -95,7 +100,7 @@ function ProfileHeader({ user,openModal }: { user: User,openModal:()=>void }) {
           </div>
         </div>
       </div>
-      <div className="absolute flex justify-end pr-4" style={{width:"200px",bottom:"8px", right:0}}>
+      <div className="absolute flex justify-end pr-4" style={{ width: "200px", bottom: "8px", right: 0 }}>
         <LightButton onClick={openModal}>
           Settings
         </LightButton>
@@ -104,10 +109,61 @@ function ProfileHeader({ user,openModal }: { user: User,openModal:()=>void }) {
   )
 }
 
-export default function Profile({ user, posts }: Props) {
+export default function Profile(props: Props) {
   const [showing, setShowing] = useState<"posts" | "friends">("posts")
   const [modalOpen, setModalOpen] = useState(false)
   const currentUser = useCurrentUser();
+  const user = props.user
+  const [posts, setPosts] = useState(props.posts)
+
+  const addComment = (commentedPost: Post, commentText: string) => {
+    if (currentUser === null) {
+      alert("You need to be logged in to comment!")
+      return
+    }
+    const comment: PostComment = {
+      uid: uuidv4(),
+      text: commentText,
+      author: currentUser,
+    }
+    const newPosts = posts.map((post) => {
+      if (post.uid != commentedPost.uid) return post
+      const { comments, ...restPost } = post
+      const newComments = comments.concat(comment)
+      return { comments: newComments, ...restPost }
+    })
+    setPosts(newPosts)
+    firestoreAddComment(commentedPost, comment)
+  }
+
+  const likePost = (likedPost: Post) => {
+    if (currentUser === null) {
+      alert("You need to be logged in to like a post!")
+      return
+    }
+    if (likedPost.usersWhoLikedUid.includes(currentUser.uid)) {
+      const newPosts = posts.map((post) => {
+        if (post.uid != likedPost.uid) {
+          return post
+        }
+
+        const { usersWhoLikedUid, ...restPost } = post
+        const newUsersWhoLikedUid = usersWhoLikedUid.filter((userUid) => userUid != currentUser.uid)
+        return { usersWhoLikedUid: newUsersWhoLikedUid, ...restPost }
+      })
+
+      setPosts(newPosts)
+
+
+      const { usersWhoLikedUid, ...restPost } = likedPost
+      const newUsersWhoLikedUid = usersWhoLikedUid.filter((userUid) => userUid != currentUser.uid)
+      updatePostLikes(likedPost, newUsersWhoLikedUid)
+    } else {
+      const newPosts = posts.map((post) => ((likedPost.uid === post.uid) ? Object.assign({}, post, { usersWhoLikedUid: post.usersWhoLikedUid.concat(currentUser.uid) }) : post))
+      setPosts(newPosts)
+      updatePostLikes(likedPost, likedPost.usersWhoLikedUid.concat(currentUser.uid))
+    }
+  }
 
   const closeModal = () => {
     setModalOpen(false)
@@ -119,7 +175,7 @@ export default function Profile({ user, posts }: Props) {
   return (
     <Layout currentUser={currentUser}>
       <div className='flex justify-center'>
-        <ProfileHeader user={user} openModal={openModal}/>
+        <ProfileHeader user={user} openModal={openModal} />
       </div>
       <div className='flex items-center flex-col'>
         <div className='pt-4 pb-4'>
@@ -131,7 +187,7 @@ export default function Profile({ user, posts }: Props) {
             {
               posts.map((post: Post) => {
                 return (
-                  <PostView post={post} key={post.uid} />
+                  <PostView addComment={addComment} likePost={likePost} isPostLiked={currentUser ? post.usersWhoLikedUid.includes(currentUser.uid) : false} post={post} key={post.uid} />
                 )
               })
             }
@@ -144,48 +200,24 @@ export default function Profile({ user, posts }: Props) {
           </div>
         }
       </div>
-      <EditProfileModal open={modalOpen} handleClose={closeModal}/>
+      <EditProfileModal open={modalOpen} handleClose={closeModal} />
     </Layout>
   )
 }
 
 export async function getServerSideProps(context: any) {
   const { id } = context.params
+  const user = await getUser(id)
+  console.log(user)
+  const posts = await getAllPostsOfUser(id)
+  const postsWithProcessedImageUrl = await Promise.all(posts.map((post) => {
+    const urlPromise = post.image ? downloadImage(post.image) : Promise.resolve(null)
+    return urlPromise.then((url) => {
+      const postWithProcessedImageUrl = Object.assign({}, post, { image: url })
+      return postWithProcessedImageUrl
+    })
 
-
-  // here we get the user using the id, or the fake user in this case
-  const fakeUser: User = {
-    uid: "12312",
-    displayName: "Smecherul 1",
-    friends: [],
-    profileImage: null,
-  }
-  const user = {
-    uid: "123",
-    displayName: "Jeff",
-    profileImage: null,
-    friends: [fakeUser],
-  }
-
-  const fakeComment: PostComment = {
-    uid: "1241",
-    author: user,
-    text: "That is a really nice photo, thanks for sharing Jeff!",
-  }
-
-  const fakePost: Post = {
-    uid: "1312",
-    author: user,
-    comments: [fakeComment, fakeComment],
-    image: johnSinger,
-    likes: 3,
-    text: "Hi everyone! Just wanted to share this cool painint, enjoy!",
-  }
-  const posts = [
-    fakePost,
-    fakePost,
-    fakePost
-  ]
-  return { props: { user, posts } }
+  }))
+  return { props: { user, posts: postsWithProcessedImageUrl } }
 }
 

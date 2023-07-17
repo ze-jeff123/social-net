@@ -1,6 +1,6 @@
 import Post from "@/types/Post";
 import { db, storage } from "./init_firebase";
-import { collection, doc, getDocs, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { UploadResult, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import User from "@/types/User";
 import PostComment from "@/types/PostComment";
@@ -8,7 +8,9 @@ import PostComment from "@/types/PostComment";
 function addPost(post:Post) {
     return setDoc(doc(db,"posts",post.uid), post)
 }
-
+function addUser(user:User) {
+    return setDoc(doc(db,"users",user.uid), user)
+}
 function getAllPosts() : Promise<Post[]> {
     const postsRef = collection(db,"posts")
     const q = query(postsRef, orderBy("timestamp","desc"), limit(15))
@@ -18,7 +20,20 @@ function getAllPosts() : Promise<Post[]> {
     })
     return posts as Promise<Post[]>
 }
-
+function getAllPostsOfUser(userUid : string) {
+    const postsRef = collection(db,"posts")
+    const q = query(postsRef, where("author.uid","==",userUid), orderBy("timestamp","desc"), limit(50))
+    
+    const posts = getDocs(q).then((snapshot) => {
+        return snapshot.docs.map((doc) => doc.data())
+    })
+    return posts as Promise<Post[]>
+}
+async function getUser(userUid:string) : Promise<User> {
+    const userRef = doc(db, "users",  userUid)
+    const userSnap = await getDoc(userRef)
+    return userSnap.data() as User
+}
 function updatePostLikes(post:Post, newUsersWhoLikedUid:string[]):Promise<void> {
     const postRef = doc(db, "posts", post.uid)
     return updateDoc(postRef,{usersWhoLikedUid : newUsersWhoLikedUid})
@@ -42,4 +57,7 @@ export {
     downloadImage,
     updatePostLikes,
     addComment,
+    addUser,
+    getUser,
+    getAllPostsOfUser,
 }
