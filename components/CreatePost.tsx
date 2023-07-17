@@ -19,7 +19,7 @@ const LoadingIndicator = () => {
 
     )
 }
-export default function CreatePost({ currentUser,createPost }: { currentUser: User | null, createPost: (newPost:Post) => Promise<void> }) {
+export default function CreatePost({ currentUser,createPost }: { currentUser: User | null, createPost: (newDatabasePost:Post, newLocalPost:Post) => Promise<void> }) {
     const imageInputRef = React.createRef<HTMLInputElement>()
     const formRef = React.createRef<HTMLFormElement>()
     const [isLoading, setIsLoading] = useState(false)
@@ -34,6 +34,8 @@ export default function CreatePost({ currentUser,createPost }: { currentUser: Us
         setIsLoading(true)
 
         e.preventDefault()
+
+        const imageFile = (imageInputRef.current?.files && imageInputRef.current.files[0]) ? imageInputRef.current.files[0] : null
         const imageUid = uuidv4()
         const maybeUploadImage = (imageInputRef.current?.files && imageInputRef.current.files[0])
             ? uploadImage(imageInputRef.current.files[0], imageUid).then(() => { return imageUid })
@@ -49,16 +51,19 @@ export default function CreatePost({ currentUser,createPost }: { currentUser: Us
         }
         maybeUploadImage.then((imageURL) => {
 
-            const newPost: Post = {
+            const newDatabasePost: Post = {
                 uid: uuidv4(),
                 author: currentUser!,
                 text: text,
                 image: imageURL,
                 likes: 0,
-                comments: []
+                comments: [],
+                timestamp : new Date(),
             }
 
-            createPost(newPost)
+            const newLocalPost = imageFile ? Object.assign({}, newDatabasePost, {image : URL.createObjectURL(imageFile)}) : newDatabasePost
+
+            createPost(newDatabasePost, newLocalPost)
 
             resetForm()
 
