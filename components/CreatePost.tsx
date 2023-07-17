@@ -58,7 +58,7 @@ export default function CreatePost({ currentUser,createPost }: { currentUser: Us
                 image: imageURL,
                 likes: 0,
                 comments: [],
-                timestamp : new Date(),
+                timestamp : (new Date()).toISOString(),
             }
 
             const newLocalPost = imageFile ? Object.assign({}, newDatabasePost, {image : URL.createObjectURL(imageFile)}) : newDatabasePost

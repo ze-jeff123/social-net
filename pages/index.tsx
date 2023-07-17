@@ -43,11 +43,11 @@ export default function Home(props : Props) {
     const currentUser = useCurrentUser();
     const [posts, setPosts] = useState(props.posts)
     
-    const createPost = (newPost : Post) => {
-        setPosts([newPost].concat(posts))
-        return addPost(newPost)
+    const createPost = (newDatabasePost : Post, newLocalPost : Post) => {
+        setPosts([newLocalPost].concat(posts))
+        return addPost(newDatabasePost)
     }
-
+    
     return (
         <Layout currentUser={currentUser}>
             <div className='flex justify-center'>

@@ -1,6 +1,6 @@
 import Post from "@/types/Post";
 import { db, storage } from "./init_firebase";
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { collection, doc, getDocs, limit, orderBy, query, setDoc, where } from "firebase/firestore";
 import { UploadResult, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 function addPost(post:Post) {
@@ -8,7 +8,10 @@ function addPost(post:Post) {
 }
 
 function getAllPosts() : Promise<Post[]> {
-    const posts = getDocs(collection(db,"posts")).then((snapshot) => {
+    const postsRef = collection(db,"posts")
+    const q = query(postsRef, orderBy("timestamp","desc"), limit(15))
+    
+    const posts = getDocs(q).then((snapshot) => {
         return snapshot.docs.map((doc) => doc.data())
     })
     return posts as Promise<Post[]>

@@ -8,6 +8,6 @@ export default interface Post {
     text : string,
     image : string | null,
     likes : number,
-    comments : PostComment[],
-    timestamp : Date
+    comments : PostComment[]
+    timestamp : string,
 }
