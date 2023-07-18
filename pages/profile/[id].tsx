@@ -56,7 +56,7 @@ function FriendView({ user }: { user: User }) {
   return (
     <div className='flex items-center gap-4 sm:gap-8'>
       <div className='w-8 h-8 sm:w-12 sm:h-12'>
-        <ProfileImage profileImage={user.profileImage} />
+        <ProfileImage userUid={user.uid} profileImage={user.profileImage} />
       </div>
       <div>
         {
@@ -91,7 +91,7 @@ function ProfileHeader({ user, openModal }: { user: User, openModal: () => void 
       <div className='p-4 pl-4 pr-4 sm:pl-8 sm:pr-8'>
         <div className='flex gap-7 items-center'>
           <div className='h-32 w-32 border-white border-8 rounded-full '>
-            <ProfileImage profileImage={user.profileImage} />
+            <ProfileImage isLink={false} userUid={user.uid} profileImage={user.profileImage} />
           </div>
           <div className="text-darkblue text-xl font-semibold">
             {

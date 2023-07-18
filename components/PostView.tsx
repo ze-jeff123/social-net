@@ -16,7 +16,7 @@ function CommentView({ comment }: { comment: PostComment }) {
     return (
         <div className='flex items-center gap-2'>
             <div className='w-10 h-10'>
-                <ProfileImage profileImage={comment.author.profileImage} />
+                <ProfileImage userUid={comment.author.uid} profileImage={comment.author.profileImage} />
             </div>
             <div className="bg-gray-50 pt-2 pb-2 pl-6 pr-6 rounded-3xl">
                 {
@@ -45,7 +45,7 @@ export default function PostView({ post, likePost, isPostLiked, addComment}: { p
         <div className='bg-white rounded-lg overflow-hidden'>
             <div className="flex p-4 items-center gap-2">
                 <div className='w-10 h-10'>
-                    <ProfileImage profileImage={post.author.profileImage} />
+                    <ProfileImage userUid={post.author.uid} profileImage={post.author.profileImage} />
                 </div>
                 <div className="text-zinc-950 font-normal font-roboto leading-loose">
                     {

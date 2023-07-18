@@ -45,13 +45,13 @@ function ProfileButton({ openModal, user }: { openModal: () => void, user : User
                     }
                 </div>
                 <div className='w-10 h-10'>
-                    <ProfileImage profileImage={user.profileImage}/>
+                    <ProfileImage userUid={user.uid} profileImage={user.profileImage}/>
                 </div>
             </button>
             <div className={clsx(!isShowing && "hidden") + " bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 z-40 relative"}>
                 <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
                     <li>
-                        <Link onMouseDown={(e) => { e.preventDefault() }} href="/profile/123" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Profile</Link>
+                        <Link onMouseDown={(e) => { e.preventDefault() }} href={"/profile/"+user.uid} className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Profile</Link>
                     </li>
                     <li>
                         <button onClick={openModal} onMouseDown={(e) => { e.preventDefault() }} className="w-full text-left block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</button>
