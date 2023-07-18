@@ -85,7 +85,7 @@ export default function CreatePost({ currentUser,createPost }: { currentUser: Us
                         < div className="bg-white rounded-lg overflow-hidden flex flex-col" >
                             <div className="flex gap-2 p-4">
                                 <div className='w-10 h-10'>
-                                    <ProfileImage profileImage={currentUser.profileImage} />
+                                    <ProfileImage userUid={currentUser.uid} isLink={false} profileImage={currentUser.profileImage} />
                                 </div>
                                 <input required value={text} onChange={onTextChange} className="min-w-max bg-gray-50  border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" type='text' placeholder="Write something..." />
                             </div>

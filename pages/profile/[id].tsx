@@ -52,6 +52,13 @@ function LightButton({ onClick, children }: React.PropsWithChildren<{ onClick: (
     }
   </button>)
 }
+function BlueButton({ onClick, children }: React.PropsWithChildren<{ onClick: () => void }>) {
+  return (<button type="button" onClick={onClick} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+    {
+      children
+    }
+  </button>)
+}
 function FriendView({ user }: { user: User }) {
   return (
     <div className='flex items-center gap-4 sm:gap-8'>
@@ -86,6 +93,8 @@ function FriendsList({ friends }: { friends: User[] }) {
 }
 
 function ProfileHeader({ user, openModal }: { user: User, openModal: () => void }) {
+  const currentUser = useCurrentUser()
+
   return (
     <div className='flex-1 rounded-md color-split-1 sm:grow-[0.8] relative -z-1'>
       <div className='p-4 pl-4 pr-4 sm:pl-8 sm:pr-8'>
@@ -100,11 +109,21 @@ function ProfileHeader({ user, openModal }: { user: User, openModal: () => void 
           </div>
         </div>
       </div>
-      <div className="absolute flex justify-end pr-4" style={{ width: "200px", bottom: "8px", right: 0 }}>
-        <LightButton onClick={openModal}>
-          Settings
-        </LightButton>
-      </div>
+      {
+        user.uid === currentUser?.uid
+          ?
+          <div className="absolute flex justify-end pr-4" style={{ width: "200px", bottom: "8px", right: 0 }}>
+            <LightButton onClick={openModal}>
+              Settings
+            </LightButton>
+          </div>
+          :
+          <div className="absolute flex justify-end pr-4" style={{ width: "200px", bottom: "8px", right: 0 }}>
+            <BlueButton onClick={openModal}>
+              Add Friend
+            </BlueButton>
+          </div>
+      }
     </div>
   )
 }
