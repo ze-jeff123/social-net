@@ -14,12 +14,13 @@ import clsx from 'clsx'
 import EditProfileModal from '@/components/EditProfileModal'
 import Button from "@/components/ButtonTailwind"
 import { useCurrentUser } from '@/app/fireauth'
-import { addPost, downloadImage, getAllPostsOfUser, getUser, updatePostLikes } from '@/app/firestore'
+import { addFriend, addPost, downloadImage, getAllPostsOfUser, getUser, updatePostLikes } from '@/app/firestore'
 import { v4 as uuidv4 } from "uuid"
 import { addComment as firestoreAddComment } from "../../app/firestore"
 type Props = {
-  user: User
-  posts: Post[]
+  user: User,
+  posts: Post[],
+  friends: User[]
 }
 
 
@@ -92,7 +93,7 @@ function FriendsList({ friends }: { friends: User[] }) {
   )
 }
 
-function ProfileHeader({ user, openModal }: { user: User, openModal: () => void }) {
+function ProfileHeader({ user, openModal, createFriendship }: { user: User, openModal: () => void, createFriendship : (user1:User,user2:User) => void }) {
   const currentUser = useCurrentUser()
 
   return (
@@ -119,7 +120,7 @@ function ProfileHeader({ user, openModal }: { user: User, openModal: () => void 
           </div>
           :
           <div className="absolute flex justify-end pr-4" style={{ width: "200px", bottom: "8px", right: 0 }}>
-            <BlueButton onClick={openModal}>
+            <BlueButton onClick={() => { if (currentUser) { createFriendship(user, currentUser) } }}>
               Add Friend
             </BlueButton>
           </div>
@@ -132,8 +133,30 @@ export default function Profile(props: Props) {
   const [showing, setShowing] = useState<"posts" | "friends">("posts")
   const [modalOpen, setModalOpen] = useState(false)
   const currentUser = useCurrentUser();
-  const user = props.user
+  const [user, setUser] = useState(props.user)
+  const [friends, setFriends] = useState(props.friends)
   const [posts, setPosts] = useState(props.posts)
+
+  /**
+   * establish mutual friendship relationship btween user1 and user2
+   */
+  const createFriendship = (user1: User, user2: User) => {
+    const createUniFriendship = (user1: User, user2: User, oldFriends:User[]) => { /// adds user2 to list of friends of user1
+      addFriend(user1, user2)
+      const newFriends = oldFriends.map((friend) => {
+        if (friend.uid === user1.uid) {
+          const { friends, ...rest } = friend
+          const hereNewFriends = friends.concat(user2.uid)
+          return { friends: hereNewFriends, ...rest }
+        }
+        return friend
+      })
+      return (user1.uid === user.uid) ? newFriends.concat(user2) : newFriends
+    }
+    const newFriends1 = createUniFriendship(user1, user2, friends)
+    const newFriends2 = createUniFriendship(user2, user1, newFriends1)
+    setFriends(newFriends2)
+  }
 
   const addComment = (commentedPost: Post, commentText: string) => {
     if (currentUser === null) {
@@ -194,7 +217,7 @@ export default function Profile(props: Props) {
   return (
     <Layout currentUser={currentUser}>
       <div className='flex justify-center'>
-        <ProfileHeader user={user} openModal={openModal} />
+        <ProfileHeader createFriendship={createFriendship} user={user} openModal={openModal} />
       </div>
       <div className='flex items-center flex-col'>
         <div className='pt-4 pb-4'>
@@ -215,7 +238,7 @@ export default function Profile(props: Props) {
         {
           showing == 'friends' &&
           <div>
-            <FriendsList friends={user.friends} />
+            <FriendsList friends={friends} />
           </div>
         }
       </div>
@@ -237,6 +260,12 @@ export async function getServerSideProps(context: any) {
     })
 
   }))
-  return { props: { user, posts: postsWithProcessedImageUrl } }
+
+  const friends = await Promise.all(
+    user.friends.map((friend) => {
+      return getUser(friend)
+    })
+  )
+  return { props: { user, posts: postsWithProcessedImageUrl, friends } }
 }
 

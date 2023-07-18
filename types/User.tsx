@@ -4,5 +4,5 @@ export default interface User {
     uid:string,
     displayName:string,
     profileImage : string|null,
-    friends:User[],
+    friends:string[],
 }

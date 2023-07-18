@@ -11,6 +11,11 @@ function addPost(post:Post) {
 function addUser(user:User) {
     return setDoc(doc(db,"users",user.uid), user)
 }
+function addFriend(user1:User, user2:User) {
+    if (user1.friends.includes(user2.uid)) return Promise.resolve<void>
+    const userRef = doc(db,"users",user1.uid)
+    return updateDoc(userRef,{friends : user1.friends.concat(user2.uid)})
+}
 function getAllPosts() : Promise<Post[]> {
     const postsRef = collection(db,"posts")
     const q = query(postsRef, orderBy("timestamp","desc"), limit(15))
@@ -60,4 +65,5 @@ export {
     addUser,
     getUser,
     getAllPostsOfUser,
+    addFriend,
 }
