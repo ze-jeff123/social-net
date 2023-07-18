@@ -18,6 +18,8 @@ import { addFriend, addPost, downloadImage, getAllPostsOfUser, getUser, removeFr
 import { v4 as uuidv4 } from "uuid"
 import { addComment as firestoreAddComment } from "../../app/firestore"
 import { Modal } from '@mui/material'
+import LightButton from '@/components/LightButton'
+import AddFriend from '@/components/AddFriend'
 type Props = {
   user: User,
   posts: Post[],
@@ -46,14 +48,6 @@ function ButtonGroup({ showing, setShowing }: { showing: "posts" | "friends", se
   )
 }
 
-
-function LightButton({ onClick, children }: React.PropsWithChildren<{ onClick: () => void }>) {
-  return (<button data-modal-target="popup-modal" data-modal-toggle="popup-modal" type="button" onClick={onClick} className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
-    {
-      children
-    }
-  </button>)
-}
 function BlueButton({ onClick, children }: React.PropsWithChildren<{ onClick: () => void }>) {
   return (<button type="button" onClick={onClick} className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
     {
@@ -62,37 +56,6 @@ function BlueButton({ onClick, children }: React.PropsWithChildren<{ onClick: ()
   </button>)
 }
 
-function RemoveFriendModal({ open, handleClose, removeFriend }: { open: boolean, handleClose: () => void, removeFriend: () => void }) {
-  const handleYes = () => {
-    removeFriend()
-    handleClose()
-  }
-  return (
-    <Modal className="flex justify-center items-center" open={open} onClose={handleClose}>
-      <div className="bg-white rounded-md p-4">
-        <div className="relative">
-          <button onClick={handleClose} type="button" className="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="popup-modal">
-            <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-            </svg>
-            <span className="sr-only">Close modal</span>
-          </button>
-
-          <div className="p-6 text-center">
-            <svg className="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-            </svg>
-            <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">Do you want to remove this friend?</h3>
-            <button onClick={handleYes} data-modal-hide="popup-modal" type="button" className="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2">
-              Yes
-            </button>
-            <button onClick={handleClose} data-modal-hide="popup-modal" type="button" className="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">No, cancel</button>
-          </div>
-        </div>
-      </div>
-    </Modal>
-  )
-}
 function FriendView({ user, currentUser, createFriendship, removeFriendship }: { user: User, currentUser: User | null, createFriendship: (user1: User, user2: User) => void, removeFriendship: (user1: User, user2: User) => void }) {
   const isFriendOfCurrentUser = currentUser ? user.friends.includes(currentUser.uid) : false
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -108,6 +71,11 @@ function FriendView({ user, currentUser, createFriendship, removeFriendship }: {
       removeFriendship(user, currentUser)
     }
   }
+  const addFriend = () => {
+    if (currentUser) {
+      createFriendship(user, currentUser)
+    }
+  }
   return (
     <div className='flex items-center gap-4 sm:gap-8 w-80'>
       <div className='w-8 h-8 sm:w-12 sm:h-12'>
@@ -119,21 +87,11 @@ function FriendView({ user, currentUser, createFriendship, removeFriendship }: {
         }
       </div>
       {
-        <div className='ml-auto'>{
-          (currentUser?.uid != user.uid) && (
-            (!isFriendOfCurrentUser)
-              ?
-              <Button onClick={() => { if (currentUser) { createFriendship(user, currentUser) } }}>
-                Add friend
-              </Button>
-              :
-              <>
-                <LightButton onClick={() => { openModal() }}>
-                  Friend
-                </LightButton>
-                <RemoveFriendModal removeFriend={removeFriend} open={isModalOpen} handleClose={handleClose} />
-              </>
-          )}
+        <div className='ml-auto'>
+          {
+            (currentUser?.uid != user.uid) &&
+            <AddFriend isFriendOfCurrentUser={isFriendOfCurrentUser} onAddFriend={addFriend} onRemoveFriend={removeFriend} />
+          }
         </div>
       }
     </div>
@@ -144,6 +102,15 @@ function FriendsList({ friends, currentUser, createFriendship, removeFriendship 
 
     <ul className="text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
       {
+        friends.length === 0 
+        ?
+        <div className="text-lg p-6 flex flex-col items-center">
+          <p>
+          You haven't added any friends yet
+          </p>
+          Add friends by going to their profile and clicking on "Add friend"!
+        </div>
+        :
         friends.map((friend) => (
           <li className="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600">
             <FriendView removeFriendship={removeFriendship} createFriendship={createFriendship} currentUser={currentUser} user={friend} />
@@ -229,7 +196,7 @@ export default function Profile(props: Props) {
         }
         return friend
       })
-      return (user1.uid === user.uid) ? newFriends.filter((friend)=>friend.uid != user2.uid) : newFriends
+      return (user1.uid === user.uid) ? newFriends.filter((friend) => friend.uid != user2.uid) : newFriends
     }
     const newFriends1 = removeUniFriendship(user1, user2, friends)
     const newFriends2 = removeUniFriendship(user2, user1, newFriends1)
