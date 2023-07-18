@@ -9,33 +9,40 @@ import Post from "@/types/Post";
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import PostComment from "@/types/PostComment";
-import {v4 as uuidv4} from "uuid"
+import { v4 as uuidv4 } from "uuid"
 import User from "@/types/User";
 
 function CommentView({ comment }: { comment: PostComment }) {
     return (
-        <div className='flex items-center gap-2'>
-            <div className='w-10 h-10'>
+        <div className='flex gap-2'>
+            <div className='w-12 h-12'>
                 <ProfileImage userUid={comment.author.uid} profileImage={comment.author.profileImage} />
             </div>
-            <div className="bg-gray-50 pt-2 pb-2 pl-6 pr-6 rounded-3xl">
-                {
-                    comment.text
-                }
+            <div className='flex flex-col h-12 relative'>
+                <div className="text-zinc-950 font-normal text-sm relative font-roboto leading-loose bottom-2">
+                    {
+                        comment.author.displayName
+                    }
+                </div>
+                <div className="bg-gray-50 pt-2 pb-2 pl-6 pr-6 rounded-3xl relative bottom-3 text-sm">
+                    {
+                        comment.text
+                    }
+                </div>
             </div>
         </div>
     )
 }
-export default function PostView({ post, likePost, isPostLiked, addComment}: { post: Post, likePost: (post: Post) => void, isPostLiked: boolean, addComment:(post:Post, commentText:string)=>void}) {
+export default function PostView({ post, likePost, isPostLiked, addComment }: { post: Post, likePost: (post: Post) => void, isPostLiked: boolean, addComment: (post: Post, commentText: string) => void }) {
     const [commentInputText, setCommentInputText] = useState("")
     const onLikeClick = () => {
         likePost(post)
     }
 
-    const changeCommentInput = (e:React.ChangeEvent<HTMLInputElement>) => {
+    const changeCommentInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCommentInputText(e.target.value)
     }
-    const submitComment = (e : React.FormEvent<HTMLFormElement>) => {
+    const submitComment = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setCommentInputText("")
         addComment(post, commentInputText)
@@ -114,8 +121,8 @@ export default function PostView({ post, likePost, isPostLiked, addComment}: { p
             </div>
             <div className='h-0.5 ml-4 mr-4 bg-slate-300'>
 
-        </div>
-            <div className='p-8 pt-4 gap-4 flex flex-col'>
+            </div>
+            <div className='p-8 pt-4 gap-5 flex flex-col'>
                 {
                     post.comments.map((comment) => {
                         return (

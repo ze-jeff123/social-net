@@ -58,13 +58,6 @@ function BlueButton({ onClick, children }: React.PropsWithChildren<{ onClick: ()
 
 function FriendView({ user, currentUser, createFriendship, removeFriendship }: { user: User, currentUser: User | null, createFriendship: (user1: User, user2: User) => void, removeFriendship: (user1: User, user2: User) => void }) {
   const isFriendOfCurrentUser = currentUser ? user.friends.includes(currentUser.uid) : false
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const handleClose = () => {
-    setIsModalOpen(false)
-  }
-  const openModal = () => {
-    setIsModalOpen(true)
-  }
 
   const removeFriend = () => {
     if (currentUser) {
@@ -122,7 +115,18 @@ function FriendsList({ friends, currentUser, createFriendship, removeFriendship 
   )
 }
 
-function ProfileHeader({ user, openModal, createFriendship, currentUser }: { currentUser: User | null, user: User, openModal: () => void, createFriendship: (user1: User, user2: User) => void }) {
+function ProfileHeader({ user, openModal, createFriendship, removeFriendship, currentUser }: { removeFriendship:(user1:User,user2:User)=>void,currentUser: User | null, user: User, openModal: () => void, createFriendship: (user1: User, user2: User) => void }) {
+  const isFriendOfCurrentUser = currentUser ? user.friends.includes(currentUser.uid) : false
+  const removeFriend = () => {
+    if (currentUser) {
+      removeFriendship(user, currentUser)
+    }
+  }
+  const addFriend = () => {
+    if (currentUser) {
+      createFriendship(user, currentUser)
+    }
+  }
   return (
     <div className='flex-1 rounded-md color-split-1 sm:grow-[0.8] relative -z-1'>
       <div className='p-4 pl-4 pr-4 sm:pl-8 sm:pr-8'>
@@ -147,9 +151,7 @@ function ProfileHeader({ user, openModal, createFriendship, currentUser }: { cur
           </div>
           :
           <div className="absolute flex justify-end pr-4" style={{ width: "200px", bottom: "8px", right: 0 }}>
-            <BlueButton onClick={() => { if (currentUser) { createFriendship(user, currentUser) } }}>
-              Add Friend
-            </BlueButton>
+            <AddFriend isFriendOfCurrentUser={isFriendOfCurrentUser} onAddFriend={addFriend} onRemoveFriend={removeFriend} />
           </div>
       }
     </div>
@@ -178,6 +180,14 @@ export default function Profile(props: Props) {
         }
         return friend
       })
+
+
+      if (user1.uid === user.uid) {
+        const {friends, ...rest} = user
+        const newFriends = friends.concat(user2.uid)
+        const newUser = {friends:newFriends, ...rest}
+        setUser(newUser)
+      }
       return (user1.uid === user.uid) ? newFriends.concat(user2) : newFriends
     }
     const newFriends1 = createUniFriendship(user1, user2, friends)
@@ -193,6 +203,12 @@ export default function Profile(props: Props) {
           const { friends, ...rest } = friend
           const hereNewFriends = friends.filter((friend) => friend != user2.uid)
           return { friends: hereNewFriends, ...rest }
+        }
+        if (user1.uid === user.uid) {
+          const {friends, ...rest} = user
+          const newFriends = friends.filter((friend)=>friend!=user2.uid)
+          const newUser = {friends:newFriends, ...rest}
+          setUser(newUser)
         }
         return friend
       })
@@ -263,7 +279,7 @@ export default function Profile(props: Props) {
   return (
     <Layout currentUser={currentUser}>
       <div className='flex justify-center'>
-        <ProfileHeader currentUser={currentUser} createFriendship={createFriendship} user={user} openModal={openModal} />
+        <ProfileHeader removeFriendship={removeFriendship} currentUser={currentUser} createFriendship={createFriendship} user={user} openModal={openModal} />
       </div>
       <div className='flex items-center flex-col'>
         <div className='pt-4 pb-4'>
