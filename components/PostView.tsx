@@ -49,7 +49,7 @@ export default function PostView({ post, likePost, isPostLiked, addComment }: { 
     }
 
     return (
-        <div className='bg-white rounded-lg overflow-hidden'>
+        <div className='bg-white rounded-lg overflow-hidden' style={{maxWidth:"100vw"}}>
             <div className="flex p-4 items-center gap-2">
                 <div className='w-10 h-10'>
                     <ProfileImage userUid={post.author.uid} profileImage={post.author.profileImage} />
