@@ -304,7 +304,7 @@ export default function Profile(props: Props) {
           </div>
         }
       </div>
-      <EditProfileModal open={modalOpen} handleClose={closeModal} />
+      <EditProfileModal user={currentUser} open={modalOpen} handleClose={closeModal} />
     </Layout>
   )
 }

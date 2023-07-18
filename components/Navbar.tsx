@@ -108,7 +108,7 @@ export default function Navbar({currentUser} : {currentUser : User | null}) {
                         : <SignIn />
                 }
             </div>
-            <EditProfileModal handleClose={closeModal} open={modalOpen} />
+            <EditProfileModal user={currentUser} handleClose={closeModal} open={modalOpen} />
         </>
     )
 }

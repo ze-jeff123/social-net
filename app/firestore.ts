@@ -11,6 +11,9 @@ function addPost(post:Post) {
 function addUser(user:User) {
     return setDoc(doc(db,"users",user.uid), user)
 }
+function updateUser(userUid:string, newUser:User) {
+    setDoc(doc(db,"users",userUid), newUser)
+}
 function addFriend(user1:User, user2:User) {
     if (user1.friends.includes(user2.uid)) return Promise.resolve<void>
     const userRef = doc(db,"users",user1.uid)
@@ -72,4 +75,5 @@ export {
     getAllPostsOfUser,
     addFriend,
     removeFriend,
+    updateUser,
 }

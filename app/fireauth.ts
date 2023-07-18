@@ -18,6 +18,18 @@ function firebaseToUser(firebaseUser: FirebaseUser): User {
     }
 }
 
+function updateCurrentProfile(newDisplayName:string,newPhotoUrl:string | null) {
+    if (auth.currentUser === null) return
+
+    return updateProfile(auth.currentUser,{
+        displayName:newDisplayName,
+        photoURL : newPhotoUrl
+    }).then(() => {
+        if (auth.currentUser) {
+            auth.currentUser.getIdTokenResult(true);
+        }
+    })
+}
 function signInWithGoogle() {
     signInWithPopup(auth, GoogleProvider).then((result) => {
         addUser(firebaseToUser(result.user))
@@ -63,4 +75,5 @@ export {
     signInAsGuest,
     useCurrentUser,
     signOut,
+    updateCurrentProfile,
 };
