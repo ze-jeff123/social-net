@@ -14,7 +14,7 @@ import clsx from 'clsx'
 import EditProfileModal from '@/components/EditProfileModal'
 import Button from "@/components/ButtonTailwind"
 import { useCurrentUser } from '@/app/fireauth'
-import { addFriend, addPost, downloadImage, getAllPostsOfUser, getUser, removeFriend, updatePostLikes } from '@/app/firestore'
+import { addFriend, addPost, deletePost, downloadImage, getAllPostsOfUser, getUser, removeFriend, updatePostLikes } from '@/app/firestore'
 import { v4 as uuidv4 } from "uuid"
 import { addComment as firestoreAddComment } from "../../app/firestore"
 import { Modal } from '@mui/material'
@@ -218,6 +218,10 @@ export default function Profile(props: Props) {
     const newFriends2 = removeUniFriendship(user2, user1, newFriends1)
     setFriends(newFriends2)
   }
+  const removePost = (deletedPost:Post) => {
+    setPosts(posts.filter((post)=>post.uid!=deletedPost.uid))
+    deletePost(deletedPost.uid)
+}
 
 
   const addComment = (commentedPost: Post, commentText: string) => {
@@ -291,7 +295,7 @@ export default function Profile(props: Props) {
             {
               posts.map((post: Post) => {
                 return (
-                  <PostView addComment={addComment} likePost={likePost} isPostLiked={currentUser ? post.usersWhoLikedUid.includes(currentUser.uid) : false} post={post} key={post.uid} />
+                  <PostView removePost={removePost} addComment={addComment} likePost={likePost} isPostLiked={currentUser ? post.usersWhoLikedUid.includes(currentUser.uid) : false} post={post} key={post.uid} />
                 )
               })
             }

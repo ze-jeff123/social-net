@@ -10,7 +10,7 @@ import PostComment from "@/types/PostComment"
 import { useEffect, useState } from "react"
 import { doc, setDoc } from "firebase/firestore"
 import { Button } from "@mui/material"
-import { addPost, downloadImage, getAllPosts, updatePostLikes, addComment as firestoreAddComment, getUser } from "@/app/firestore"
+import { addPost, downloadImage, getAllPosts, updatePostLikes, addComment as firestoreAddComment, getUser, deletePost } from "@/app/firestore"
 import { useCurrentUser } from "@/app/fireauth"
 import { v4 as uuidv4 } from "uuid"
 /*const fakeUser: User = {
@@ -45,6 +45,10 @@ export default function Home(props: Props) {
     const currentUser = useCurrentUser();
     const [posts, setPosts] = useState(props.posts)
 
+    const removePost = (deletedPost:Post) => {
+        setPosts(posts.filter((post)=>post.uid!=deletedPost.uid))
+        deletePost(deletedPost.uid)
+    }
     const addComment = (commentedPost: Post, commentText: string) => {
         if (currentUser === null) {
             alert("You need to be logged in to comment!")
@@ -104,7 +108,7 @@ export default function Home(props: Props) {
                     <CreatePost createPost={createPost} currentUser={currentUser} />
                     {
                         posts.map((post) => (
-                            <PostView addComment={addComment} isPostLiked={currentUser ? post.usersWhoLikedUid.includes(currentUser.uid) : false} post={post} key={post.uid} likePost={likePost} />
+                            <PostView removePost={removePost} addComment={addComment} isPostLiked={currentUser ? post.usersWhoLikedUid.includes(currentUser.uid) : false} post={post} key={post.uid} likePost={likePost} />
                         ))
                     }
                 </div>
