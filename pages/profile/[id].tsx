@@ -237,7 +237,7 @@ export default function Profile(props: Props) {
       return { comments: newComments, ...restPost }
     })
     setPosts(newPosts)
-    firestoreAddComment(commentedPost, comment)
+    firestoreAddComment(commentedPost.uid, comment)
   }
 
   const likePost = (likedPost: Post) => {
@@ -323,11 +323,26 @@ export async function getServerSideProps(context: any) {
 
   }))
 
+  const postsWithProcessedAuthors = await Promise.all(postsWithProcessedImageUrl.map((post) => {
+    const user = getUser(post.author as unknown as string)
+    const comments = Promise.all(post.comments.map((comment) => {
+        const { author, ...rest } = comment
+        return getUser(author as unknown as string).then((user) => {
+            return { author: user, ...rest }
+        })
+    }))
+    return comments.then((comments) => {
+        return user.then((user) => {
+            return Object.assign({}, post, { author: user, comments : comments })
+        })
+    })
+}))
+
   const friends = await Promise.all(
     user.friends.map((friend) => {
       return getUser(friend)
     })
   )
-  return { props: { user, posts: postsWithProcessedImageUrl, friends } }
+  return { props: { user, posts: postsWithProcessedAuthors, friends } }
 }
 

@@ -10,9 +10,9 @@ import PostComment from "@/types/PostComment"
 import { useEffect, useState } from "react"
 import { doc, setDoc } from "firebase/firestore"
 import { Button } from "@mui/material"
-import { addPost, downloadImage, getAllPosts, updatePostLikes, addComment as firestoreAddComment } from "@/app/firestore"
+import { addPost, downloadImage, getAllPosts, updatePostLikes, addComment as firestoreAddComment, getUser } from "@/app/firestore"
 import { useCurrentUser } from "@/app/fireauth"
-import {v4 as uuidv4} from "uuid"
+import { v4 as uuidv4 } from "uuid"
 /*const fakeUser: User = {
     uid: "123",
     displayName: "Jeff",
@@ -45,24 +45,24 @@ export default function Home(props: Props) {
     const currentUser = useCurrentUser();
     const [posts, setPosts] = useState(props.posts)
 
-    const addComment = (commentedPost:Post, commentText:string) => {
+    const addComment = (commentedPost: Post, commentText: string) => {
         if (currentUser === null) {
             alert("You need to be logged in to comment!")
             return
         }
-        const comment : PostComment = {
-            uid : uuidv4(),
-            text : commentText,
-            author : currentUser,
+        const comment: PostComment = {
+            uid: uuidv4(),
+            text: commentText,
+            author: currentUser,
         }
         const newPosts = posts.map((post) => {
             if (post.uid != commentedPost.uid) return post
-            const {comments , ...restPost} = post
+            const { comments, ...restPost } = post
             const newComments = comments.concat(comment)
-            return {comments : newComments , ...restPost}
+            return { comments: newComments, ...restPost }
         })
         setPosts(newPosts)
-        firestoreAddComment(commentedPost,comment)
+        firestoreAddComment(commentedPost.uid, comment)
     }
     const createPost = (newDatabasePost: Post, newLocalPost: Post) => {
         setPosts([newLocalPost].concat(posts))
@@ -79,15 +79,15 @@ export default function Home(props: Props) {
                     return post
                 }
 
-                const { usersWhoLikedUid, ...restPost} = post
+                const { usersWhoLikedUid, ...restPost } = post
                 const newUsersWhoLikedUid = usersWhoLikedUid.filter((userUid) => userUid != currentUser.uid)
-                return {usersWhoLikedUid : newUsersWhoLikedUid, ...restPost}
+                return { usersWhoLikedUid: newUsersWhoLikedUid, ...restPost }
             })
 
             setPosts(newPosts)
 
 
-            const { usersWhoLikedUid, ...restPost} = likedPost
+            const { usersWhoLikedUid, ...restPost } = likedPost
             const newUsersWhoLikedUid = usersWhoLikedUid.filter((userUid) => userUid != currentUser.uid)
             updatePostLikes(likedPost, newUsersWhoLikedUid)
         } else {
@@ -125,5 +125,20 @@ export async function getServerSideProps() {
         })
 
     }))
-    return { props: { posts: postsWithProcessedImageUrl } }
+
+    const postsWithProcessedAuthors = await Promise.all(postsWithProcessedImageUrl.map((post) => {
+        const user = getUser(post.author as unknown as string)
+        const comments = Promise.all(post.comments.map((comment) => {
+            const { author, ...rest } = comment
+            return getUser(author as unknown as string).then((user) => {
+                return { author: user, ...rest }
+            })
+        }))
+        return comments.then((comments) => {
+            return user.then((user) => {
+                return Object.assign({}, post, { author: user, comments : comments })
+            })
+        })
+    }))
+    return { props: { posts: postsWithProcessedAuthors } }
 }
