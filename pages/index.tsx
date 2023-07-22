@@ -108,7 +108,7 @@ export default function Home(props: Props) {
                     <CreatePost createPost={createPost} currentUser={currentUser} />
                     {
                         posts.map((post) => (
-                            <PostView removePost={removePost} addComment={addComment} isPostLiked={currentUser ? post.usersWhoLikedUid.includes(currentUser.uid) : false} post={post} key={post.uid} likePost={likePost} />
+                            <PostView isOwnPost={post.author.uid === currentUser?.uid} removePost={removePost} addComment={addComment} isPostLiked={currentUser ? post.usersWhoLikedUid.includes(currentUser.uid) : false} post={post} key={post.uid} likePost={likePost} />
                         ))
                     }
                 </div>

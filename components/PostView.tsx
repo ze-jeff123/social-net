@@ -35,7 +35,7 @@ function CommentView({ comment }: { comment: PostComment }) {
         </div>
     )
 }
-export default function PostView({ post, likePost, isPostLiked, addComment, removePost }: { post: Post,removePost:(post:Post)=>void, likePost: (post: Post) => void, isPostLiked: boolean, addComment: (post: Post, commentText: string) => void }) {
+export default function PostView({ isOwnPost, post, likePost, isPostLiked, addComment, removePost }: { isOwnPost: boolean, post: Post, removePost: (post: Post) => void, likePost: (post: Post) => void, isPostLiked: boolean, addComment: (post: Post, commentText: string) => void }) {
     const [commentInputText, setCommentInputText] = useState("")
     const [isListShowing, setIsListShowing] = useState(false)
     const onLikeClick = () => {
@@ -53,22 +53,27 @@ export default function PostView({ post, likePost, isPostLiked, addComment, remo
         setCommentInputText("")
         addComment(post, commentInputText)
     }
-    
+console.log(isOwnPost)
     return (
         <div className='bg-white relative rounded-lg overflow-hidden' style={{ maxWidth: "100vw" }}>
-            <button style={{ right: "5px", top: "5px" }} className="absolute" onClick={toggle} onBlur={() => { setIsListShowing(false) }}>
-                <MoreVertIcon className="text-slate-700 hover:cursor-pointer hover:bg-slate-300 rounded-full " />
-            </button>
-            <div className='ml-auto items-end flex flex-col relative'>
+            {
+                isOwnPost && (<>
+                    <button style={{ right: "5px", top: "5px" }} className="absolute" onClick={toggle} onBlur={() => { setIsListShowing(false) }}>
+                        <MoreVertIcon className="text-slate-700 hover:cursor-pointer hover:bg-slate-300 rounded-full " />
+                    </button>
 
-                <div className={clsx(!isListShowing && "hidden") + " bg-white divide-y absolute top-8 divide-gray-100 rounded-lg hover:cursor-pointer hover:bg-gray-100 shadow w-28 justify-center flex  dark:bg-gray-700 z-40"}>
-                    <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
-                        <button onMouseDown={(e) => { e.preventDefault() }} onClick={()=>{removePost(post)}} type="button" className="text-red-500">
-                            Remove post
-                        </button>
-                    </ul>
-                </div>
-            </div>
+                    <div className='ml-auto items-end flex flex-col relative'>
+
+                        <div className={clsx(!isListShowing && "hidden") + " bg-white divide-y absolute top-8 divide-gray-100 rounded-lg hover:cursor-pointer hover:bg-gray-100 shadow w-28 justify-center flex  dark:bg-gray-700 z-40"}>
+                            <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
+                                <button onMouseDown={(e) => { e.preventDefault() }} onClick={() => { removePost(post) }} type="button" className="text-red-500">
+                                    Remove post
+                                </button>
+                            </ul>
+                        </div>
+                    </div>
+                </>)
+            }
             <div className="flex p-4 items-center gap-2">
                 <div className='w-10 h-10'>
                     <ProfileImage userUid={post.author.uid} profileImage={post.author.profileImage} />

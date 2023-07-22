@@ -295,7 +295,7 @@ export default function Profile(props: Props) {
             {
               posts.map((post: Post) => {
                 return (
-                  <PostView removePost={removePost} addComment={addComment} likePost={likePost} isPostLiked={currentUser ? post.usersWhoLikedUid.includes(currentUser.uid) : false} post={post} key={post.uid} />
+                  <PostView isOwnPost={post.author.uid === currentUser?.uid} removePost={removePost} addComment={addComment} likePost={likePost} isPostLiked={currentUser ? post.usersWhoLikedUid.includes(currentUser.uid) : false} post={post} key={post.uid} />
                 )
               })
             }
