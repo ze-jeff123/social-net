@@ -53,7 +53,6 @@ export default function PostView({ isOwnPost, post, likePost, isPostLiked, addCo
         setCommentInputText("")
         addComment(post, commentInputText)
     }
-console.log(isOwnPost)
     return (
         <div className='bg-white relative rounded-lg overflow-hidden' style={{ maxWidth: "100vw" }}>
             {

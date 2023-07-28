@@ -39,7 +39,6 @@ export default function EditProfileModal({ user , open, handleClose }: Props) {
         getImageUid().then((imageUid) => {
             const newUser = Object.assign({}, user, { displayName: displayName, profileImage: imageUid })
             updateUser(user.uid, newUser)
-            console.log(imageUid)
             updateCurrentProfile(newUser.displayName, imageUid )
             handleClose()
         })

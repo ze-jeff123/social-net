@@ -95,7 +95,6 @@ export default function Navbar({currentUser} : {currentUser : User | null}) {
         setModalOpen(false)
     }
     const openModal = () => {
-        console.log("hi modal open")
         setModalOpen(true)
     }
     return (

@@ -277,7 +277,6 @@ export default function Profile(props: Props) {
     setModalOpen(false)
   }
   const openModal = () => {
-    console.log("hi modal open")
     setModalOpen(true)
   }
   return (
@@ -316,7 +315,6 @@ export default function Profile(props: Props) {
 export async function getServerSideProps(context: any) {
   const { id } = context.params
   const user = await getUser(id)
-  console.log(user)
   const posts = await getAllPostsOfUser(id)
   const postsWithProcessedImageUrl = await Promise.all(posts.map((post) => {
     const urlPromise = post.image ? downloadImage(post.image) : Promise.resolve(null)
