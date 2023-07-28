@@ -1,5 +1,5 @@
 import Image, { StaticImageData } from "next/image";
-import defaultImage from "../public/images/profile.jpg"
+import defaultImage from "../public/images/guest-profile.png"
 import React from "react";
 
 export default function ProfileImage({ profileImage, userUid, isLink = true, style }: { style?: any, profileImage: string | null, userUid: string, isLink?: boolean }) {

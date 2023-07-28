@@ -3,7 +3,7 @@ import User from '@/types/User'
 import { useParams } from 'next/navigation'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
-import profile from "../../public/images/profile.jpg"
+import profile from "../../public/images/guest-profile.png"
 import ProfileImage from '@/components/ProfileImage'
 import "../../app/utils.css"
 import Post from '@/types/Post'

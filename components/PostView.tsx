@@ -1,6 +1,6 @@
 import "../app/globals.css"
 import ProfileImage from "./ProfileImage"
-import profileImage from "../public/images/profile.jpg"
+import profileImage from "../public/images/guest-profile.png"
 import PhotoIcon from '@mui/icons-material/Photo';
 import React, { useEffect, useState } from "react";
 import SendIcon from '@mui/icons-material/Send';

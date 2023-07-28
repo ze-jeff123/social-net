@@ -17,7 +17,7 @@ export default function EditProfileModal({ open, handleClose }: Props) {
     }
 
     const guestSignIn = () => {
-        signInAsGuest("Guest")
+        signInAsGuest(guestName)
     }
     const googleSignIn = () => {
         signInWithGoogle()
@@ -38,7 +38,7 @@ export default function EditProfileModal({ open, handleClose }: Props) {
                 <div className='flex flex-col gap-3'>
                     <form onSubmit={submitGuestForm} className="flex gap-4">
                         <TextField onChange={onChangeGuestName} value={guestName} label="username" variant="outlined" />
-                        <Button onClick={() => { }}>Sign in as guest</Button>
+                        <Button onClick={guestSignIn}>Sign in as guest</Button>
                     </form>
                     <Button onClick={googleSignIn}>
                         Sign in with Google

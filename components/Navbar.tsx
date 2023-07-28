@@ -1,7 +1,7 @@
 import Link from "next/link"
 import "../app/globals.css"
 import Image from "next/image"
-import profileImage from "../public/images/profile.jpg"
+import profileImage from "../public/images/guest-profile.png"
 import ProfileImage from "./ProfileImage"
 import { useState } from "react"
 import clsx from "clsx"
