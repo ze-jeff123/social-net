@@ -15,7 +15,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import clsx from "clsx";
 import { useCurrentUser } from "@/app/fireauth";
 
-function CommentView({ comment }: { comment: PostComment }) {
+function CommentView({ comment,post,removeComment }: { comment: PostComment,post:Post,removeComment:(post:Post,comment:PostComment)=>void }) {
     const currentUser = useCurrentUser()
     console.log(comment.author.uid, currentUser?.uid)
     return (
@@ -24,7 +24,7 @@ function CommentView({ comment }: { comment: PostComment }) {
             <div className='w-12 h-12'>
                 <ProfileImage userUid={comment.author.uid} profileImage={comment.author.profileImage} />
             </div>
-            <div className='flex flex-col relative'>
+            <div className='flex flex-col relative' style={{maxWidth:"calc(100% - 90px)", overflow:"hidden"}}>
                 <div className="text-zinc-950 font-normal text-sm relative font-roboto leading-loose bottom-2">
                     {
                         comment.author.displayName
@@ -37,7 +37,7 @@ function CommentView({ comment }: { comment: PostComment }) {
                 </div>
             </div>
 
-            <RemovePost show={comment.author.uid === currentUser?.uid} onRemove={()=>{}}/>
+            <RemovePost show={comment.author.uid === currentUser?.uid} onRemove={()=>{removeComment(post,comment)}}/>
 
         </div>
     )
@@ -51,7 +51,7 @@ function RemovePost({show,onRemove} : {show:boolean, onRemove:()=>void}) {
     return <>
         {
                 show && (<>
-                    <button style={{ right: "5px", top: "5px" }} className="absolute" onClick={toggle} onBlur={() => { setIsListShowing(false) }}>
+                    <button style={{ right: "5px", top: "5px" }} className="absolute z-50" onClick={toggle} onBlur={() => { setIsListShowing(false) }}>
                         <MoreVertIcon className="text-slate-700 hover:cursor-pointer hover:bg-slate-300 rounded-full " />
                     </button>
 
@@ -69,7 +69,7 @@ function RemovePost({show,onRemove} : {show:boolean, onRemove:()=>void}) {
             }
     </>
 }
-export default function PostView({ isOwnPost, post, likePost, isPostLiked, addComment, removePost }: { isOwnPost: boolean, post: Post, removePost: (post: Post) => void, likePost: (post: Post) => void, isPostLiked: boolean, addComment: (post: Post, commentText: string) => void }) {
+export default function PostView({removeComment, isOwnPost, post, likePost, isPostLiked, addComment, removePost }: {removeComment:(postUid:Post,comment:PostComment)=>void, isOwnPost: boolean, post: Post, removePost: (post: Post) => void, likePost: (post: Post) => void, isPostLiked: boolean, addComment: (post: Post, commentText: string) => void }) {
     const [commentInputText, setCommentInputText] = useState("")
     const [isListShowing, setIsListShowing] = useState(false)
     const onLikeClick = () => {
@@ -166,7 +166,7 @@ export default function PostView({ isOwnPost, post, likePost, isPostLiked, addCo
                 {
                     post.comments.map((comment) => {
                         return (
-                            <CommentView comment={comment} key={comment.uid} />
+                            <CommentView removeComment={removeComment} post={post} comment={comment} key={comment.uid} />
                         )
                     })
                 }

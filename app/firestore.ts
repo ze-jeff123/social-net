@@ -1,6 +1,6 @@
 import Post from "@/types/Post";
 import { db, storage } from "./init_firebase";
-import { arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, limit, orderBy, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { UploadResult, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import User from "@/types/User";
 import PostComment from "@/types/PostComment";
@@ -9,6 +9,14 @@ function addPost(post:Post) {
     const postDb:any = {...post}
     postDb.author = post.author.uid
     return setDoc(doc(db,"posts",post.uid), postDb)
+}
+function removeComment(postUid : string, comment: PostComment) {
+    const commentDb:any = {...comment}
+    commentDb.author = commentDb.author.uid
+    const postRef = doc(db,"posts",postUid)
+    return updateDoc(postRef, {
+        comments : arrayRemove(commentDb)
+    })
 }
 function deletePost(postUid:string) {
     const postRef = doc(db, "posts", postUid)
@@ -88,4 +96,5 @@ export {
     removeFriend,
     updateUser,
     deletePost,
+    removeComment
 }

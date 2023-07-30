@@ -10,7 +10,7 @@ import PostComment from "@/types/PostComment"
 import { useEffect, useState } from "react"
 import { doc, setDoc } from "firebase/firestore"
 import { Button } from "@mui/material"
-import { addPost, downloadImage, getAllPosts, updatePostLikes, addComment as firestoreAddComment, getUser, deletePost } from "@/app/firestore"
+import {removeComment as firestoreRemoveComment, addPost, downloadImage, getAllPosts, updatePostLikes, addComment as firestoreAddComment, getUser, deletePost } from "@/app/firestore"
 import { useCurrentUser } from "@/app/fireauth"
 import { v4 as uuidv4 } from "uuid"
 /*const fakeUser: User = {
@@ -68,6 +68,22 @@ export default function Home(props: Props) {
         setPosts(newPosts)
         firestoreAddComment(commentedPost.uid, comment)
     }
+    const removeComment = (commentedPost : Post, removedComment : PostComment) => {
+        if (currentUser === null) {
+            alert("You need to be logged in to remove a comment!")
+            return
+        }
+
+        setPosts(posts.map((post) => {
+            if (post.uid === commentedPost.uid) {
+                const {comments, ...rest} = post
+                const newComments = comments.filter((comment) => (comment.uid != removedComment.uid))
+                return {comments : newComments, ...rest}
+            }
+            return post
+        }))
+        firestoreRemoveComment(commentedPost.uid, removedComment)
+    }
     const createPost = (newDatabasePost: Post, newLocalPost: Post) => {
         setPosts([newLocalPost].concat(posts))
         return addPost(newDatabasePost)
@@ -108,7 +124,7 @@ export default function Home(props: Props) {
                     <CreatePost createPost={createPost} currentUser={currentUser} />
                     {
                         posts.map((post) => (
-                            <PostView isOwnPost={post.author.uid === currentUser?.uid} removePost={removePost} addComment={addComment} isPostLiked={currentUser ? post.usersWhoLikedUid.includes(currentUser.uid) : false} post={post} key={post.uid} likePost={likePost} />
+                            <PostView removeComment={removeComment} isOwnPost={post.author.uid === currentUser?.uid} removePost={removePost} addComment={addComment} isPostLiked={currentUser ? post.usersWhoLikedUid.includes(currentUser.uid) : false} post={post} key={post.uid} likePost={likePost} />
                         ))
                     }
                 </div>
