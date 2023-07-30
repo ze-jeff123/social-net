@@ -13,14 +13,18 @@ import { v4 as uuidv4 } from "uuid"
 import User from "@/types/User";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import clsx from "clsx";
+import { useCurrentUser } from "@/app/fireauth";
 
 function CommentView({ comment }: { comment: PostComment }) {
+    const currentUser = useCurrentUser()
+    console.log(comment.author.uid, currentUser?.uid)
     return (
-        <div className='flex gap-2'>
+        <div className='flex gap-2 relative'>
+            
             <div className='w-12 h-12'>
                 <ProfileImage userUid={comment.author.uid} profileImage={comment.author.profileImage} />
             </div>
-            <div className='flex flex-col h-12 relative'>
+            <div className='flex flex-col relative'>
                 <div className="text-zinc-950 font-normal text-sm relative font-roboto leading-loose bottom-2">
                     {
                         comment.author.displayName
@@ -32,8 +36,38 @@ function CommentView({ comment }: { comment: PostComment }) {
                     }
                 </div>
             </div>
+
+            <RemovePost show={comment.author.uid === currentUser?.uid} onRemove={()=>{}}/>
+
         </div>
     )
+}
+function RemovePost({show,onRemove} : {show:boolean, onRemove:()=>void}) {
+    
+    const [isListShowing,setIsListShowing] = useState(false)
+    const toggle = () => {
+        setIsListShowing(!isListShowing)
+    }
+    return <>
+        {
+                show && (<>
+                    <button style={{ right: "5px", top: "5px" }} className="absolute" onClick={toggle} onBlur={() => { setIsListShowing(false) }}>
+                        <MoreVertIcon className="text-slate-700 hover:cursor-pointer hover:bg-slate-300 rounded-full " />
+                    </button>
+
+                    <div className='ml-auto items-end flex flex-col relative'>
+
+                        <div className={clsx(!isListShowing && "hidden") + " bg-white divide-y absolute top-8 divide-gray-100 rounded-lg hover:cursor-pointer hover:bg-gray-100 shadow w-28 justify-center flex  dark:bg-gray-700 z-40"}>
+                            <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
+                                <button onMouseDown={(e) => { e.preventDefault() }} onClick={onRemove} type="button" className="text-red-500">
+                                    Remove post
+                                </button>
+                            </ul>
+                        </div>
+                    </div>
+                </>)
+            }
+    </>
 }
 export default function PostView({ isOwnPost, post, likePost, isPostLiked, addComment, removePost }: { isOwnPost: boolean, post: Post, removePost: (post: Post) => void, likePost: (post: Post) => void, isPostLiked: boolean, addComment: (post: Post, commentText: string) => void }) {
     const [commentInputText, setCommentInputText] = useState("")
@@ -55,25 +89,8 @@ export default function PostView({ isOwnPost, post, likePost, isPostLiked, addCo
     }
     return (
         <div className='bg-white relative rounded-lg overflow-hidden' style={{ maxWidth: "100vw" }}>
-            {
-                isOwnPost && (<>
-                    <button style={{ right: "5px", top: "5px" }} className="absolute" onClick={toggle} onBlur={() => { setIsListShowing(false) }}>
-                        <MoreVertIcon className="text-slate-700 hover:cursor-pointer hover:bg-slate-300 rounded-full " />
-                    </button>
-
-                    <div className='ml-auto items-end flex flex-col relative'>
-
-                        <div className={clsx(!isListShowing && "hidden") + " bg-white divide-y absolute top-8 divide-gray-100 rounded-lg hover:cursor-pointer hover:bg-gray-100 shadow w-28 justify-center flex  dark:bg-gray-700 z-40"}>
-                            <ul className="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
-                                <button onMouseDown={(e) => { e.preventDefault() }} onClick={() => { removePost(post) }} type="button" className="text-red-500">
-                                    Remove post
-                                </button>
-                            </ul>
-                        </div>
-                    </div>
-                </>)
-            }
-            <div className="flex p-4 items-center gap-2">
+            <RemovePost show={isOwnPost} onRemove={()=>{removePost(post)}} />
+            <div className="flex p-4 items-center gap-4">
                 <div className='w-10 h-10'>
                     <ProfileImage userUid={post.author.uid} profileImage={post.author.profileImage} />
                 </div>
@@ -145,7 +162,7 @@ export default function PostView({ isOwnPost, post, likePost, isPostLiked, addCo
             <div className='h-0.5 ml-4 mr-4 bg-slate-300'>
 
             </div>
-            <div className='p-8 pt-4 gap-5 flex flex-col'>
+            <div className='p-8 pt-4 gap-2 flex flex-col'>
                 {
                     post.comments.map((comment) => {
                         return (
