@@ -45,7 +45,7 @@ function ProfileButton({ openModal, user }: { openModal: () => void, user : User
                     }
                 </div>
                 <div className='w-10 h-10'>
-                    <ProfileImage isLink={false} userUid={user.uid} profileImage={user.profileImage}/>
+                    <ProfileImage size={40} isLink={false} userUid={user.uid} profileImage={user.profileImage}/>
                 </div>
             </button>
             <div className={clsx(!isShowing && "hidden") + " bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 z-40 relative"}>

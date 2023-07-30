@@ -132,7 +132,7 @@ function ProfileHeader({ user, openModal, createFriendship, removeFriendship, cu
       <div className='p-4 pl-4 pr-4 sm:pl-8 sm:pr-8'>
         <div className='flex gap-7 items-center'>
           <div className='h-32 w-32 border-white border-8 rounded-full '>
-            <ProfileImage isLink={false} userUid={user.uid} profileImage={user.profileImage} />
+            <ProfileImage size="100%" isLink={false} userUid={user.uid} profileImage={user.profileImage} />
           </div>
           <div className="text-darkblue text-xl font-semibold">
             {
