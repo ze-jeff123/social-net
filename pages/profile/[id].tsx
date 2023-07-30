@@ -14,7 +14,7 @@ import clsx from 'clsx'
 import EditProfileModal from '@/components/EditProfileModal'
 import Button from "@/components/ButtonTailwind"
 import { useCurrentUser } from '@/app/fireauth'
-import { addFriend, addPost, deletePost, downloadImage, getAllPostsOfUser, getUser, removeFriend, updatePostLikes } from '@/app/firestore'
+import { removeComment as firestoreRemoveComment, addFriend, addPost, deletePost, downloadImage, getAllPostsOfUser, getUser, removeFriend, updatePostLikes } from '@/app/firestore'
 import { v4 as uuidv4 } from "uuid"
 import { addComment as firestoreAddComment } from "../../app/firestore"
 import { Modal } from '@mui/material'
@@ -222,7 +222,22 @@ export default function Profile(props: Props) {
     setPosts(posts.filter((post)=>post.uid!=deletedPost.uid))
     deletePost(deletedPost.uid)
 }
+const removeComment = (commentedPost : Post, removedComment : PostComment) => {
+  if (currentUser === null) {
+      alert("You need to be logged in to remove a comment!")
+      return
+  }
 
+  setPosts(posts.map((post) => {
+      if (post.uid === commentedPost.uid) {
+          const {comments, ...rest} = post
+          const newComments = comments.filter((comment) => (comment.uid != removedComment.uid))
+          return {comments : newComments, ...rest}
+      }
+      return post
+  }))
+  firestoreRemoveComment(commentedPost.uid, removedComment)
+}
 
   const addComment = (commentedPost: Post, commentText: string) => {
     if (currentUser === null) {
@@ -294,7 +309,7 @@ export default function Profile(props: Props) {
             {
               posts.map((post: Post) => {
                 return (
-                  <PostView isOwnPost={post.author.uid === currentUser?.uid} removePost={removePost} addComment={addComment} likePost={likePost} isPostLiked={currentUser ? post.usersWhoLikedUid.includes(currentUser.uid) : false} post={post} key={post.uid} />
+                  <PostView removeComment={removeComment} isOwnPost={post.author.uid === currentUser?.uid} removePost={removePost} addComment={addComment} likePost={likePost} isPostLiked={currentUser ? post.usersWhoLikedUid.includes(currentUser.uid) : false} post={post} key={post.uid} />
                 )
               })
             }
