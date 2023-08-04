@@ -42,6 +42,7 @@ interface Props {
 }
 
 export default function Home(props: Props) {
+
     const currentUser = useCurrentUser();
     const [posts, setPosts] = useState(props.posts)
 

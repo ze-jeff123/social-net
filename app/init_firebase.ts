@@ -1,8 +1,17 @@
 import { initializeApp } from "firebase/app";
-import { firebaseConfig } from "../firebase_config"
 import { collection, connectFirestoreEmulator, doc, getDocs, getFirestore, setDoc } from 'firebase/firestore';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { getStorage } from "firebase/storage";
+import 'dotenv/config'
+
+const firebaseConfig = {
+    apiKey: process.env.apiKey,
+    authDomain: process.env.authDomain,
+    projectId: process.env.projectId,
+    storageBucket: process.env.storageBucket,
+    messagingSenderId: process.env.messagingSenderId,
+    appId: process.env.appId
+}
 
 const app = initializeApp(firebaseConfig)
 
