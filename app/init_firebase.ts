@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { collection, connectFirestoreEmulator, doc, getDocs, getFirestore, setDoc } from 'firebase/firestore';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { getStorage } from "firebase/storage";
-import 'dotenv/config'
+
 
 const firebaseConfig = {
     apiKey: process.env.apiKey,
@@ -12,7 +12,6 @@ const firebaseConfig = {
     messagingSenderId: process.env.messagingSenderId,
     appId: process.env.appId
 }
-
 const app = initializeApp(firebaseConfig)
 
 const db = getFirestore(app)

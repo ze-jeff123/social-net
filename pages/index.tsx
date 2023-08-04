@@ -7,6 +7,7 @@ import User from "@/types/User"
 import profile from "../public/images/guest-profile.png"
 import johnSinger from "../public/images/john-singer.jpg"
 import PostComment from "@/types/PostComment"
+
 import { useEffect, useState } from "react"
 import { doc, setDoc } from "firebase/firestore"
 import { Button } from "@mui/material"

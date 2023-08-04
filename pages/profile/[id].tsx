@@ -3,6 +3,7 @@ import User from '@/types/User'
 import { useParams } from 'next/navigation'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
+
 import profile from "../../public/images/guest-profile.png"
 import ProfileImage from '@/components/ProfileImage'
 import "../../app/utils.css"
@@ -105,7 +106,7 @@ function FriendsList({ friends, currentUser, createFriendship, removeFriendship 
         </div>
         :
         friends.map((friend) => (
-          <li className="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+          <li key={friend.uid} className="w-full px-4 py-2 border-b border-gray-200 rounded-t-lg dark:border-gray-600">
             <FriendView removeFriendship={removeFriendship} createFriendship={createFriendship} currentUser={currentUser} user={friend} />
           </li>
         ))

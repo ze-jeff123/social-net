@@ -17,7 +17,6 @@ import { useCurrentUser } from "@/app/fireauth";
 
 function CommentView({ comment,post,removeComment }: { comment: PostComment,post:Post,removeComment:(post:Post,comment:PostComment)=>void }) {
     const currentUser = useCurrentUser()
-    console.log(comment.author.uid, currentUser?.uid)
     return (
         <div className='flex gap-2 relative'>
             
